@@ -1,0 +1,36 @@
+{
+  "name": "proto-blockchain",
+  "version": "1.0.0",
+  "description": "A prototype for a blockchain in javascript.",
+  "scripts": {
+    "start": "node --experimental-modules main.mjs",
+    "test": "ava --verbose --fail-fast --serial"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brunopacheco1/proto-blockchain.git"
+  },
+  "keywords": [
+    "blockchain",
+    "node",
+    "javascript"
+  ],
+  "author": "Bruno da Silva",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/brunopacheco1/proto-blockchain/issues"
+  },
+  "homepage": "https://github.com/brunopacheco1/proto-blockchain#readme",
+  "engines": {
+    "node": "10.4.*"
+  },
+  "devDependencies": {
+    "ava": "1.0.0-beta.6",
+    "esm": "^3.0.55"
+  },
+  "dependencies": {
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "express-validator": "^5.2.0"
+  }
+}
