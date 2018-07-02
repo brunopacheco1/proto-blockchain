@@ -1,0 +1,9 @@
+language: node_js
+dist: trusty
+sudo: required
+node_js:
+  - "10"
+script:
+  - npm test
+after_success:
+  - git push https://heroku:$HEROKU_API_KEY@git.heroku.com/proto-blockchain.git HEAD
