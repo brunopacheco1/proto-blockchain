@@ -4,7 +4,7 @@
   "description": "A prototype for a blockchain in javascript.",
   "scripts": {
     "start": "node --experimental-modules main.mjs",
-    "test": "ava --verbose --fail-fast --serial"
+    "test": "ava --verbose"
   },
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "ava": "1.0.0-beta.6",
-    "esm": "^3.0.55"
+    "esm": "^3.0.61"
   },
   "dependencies": {
     "cors": "^2.8.4",

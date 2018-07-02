@@ -48,4 +48,22 @@ export default () => {
     t.is(pedingTransactions.length, 0)
     t.is(chain[1].transactions.length, 1)
   })
+
+  test("Hashing block.", t => {
+    const nonce = 33601
+    const previousBlockHash = "0INA90SDNF90N"
+    const currentBlockData = {index: 0, timestamp: 0, transactions: []}
+
+    const hash = mycoin.hashBlock(previousBlockHash, currentBlockData, nonce)
+    const toCompare = mycoin._hash(previousBlockHash + nonce + JSON.stringify(currentBlockData))
+    t.is(hash, toCompare)
+    t.is(hash.substring(0,4), "0000")
+  })
+
+  test("Proof of work.", t => {
+    const previousBlockHash = "0INA90SDNF90N"
+    const currentBlockData = {index: 0, timestamp: 0, transactions: []}
+    const nonce = mycoin.proofOfWork(previousBlockHash, currentBlockData)
+    t.is(nonce, 33601)
+  })
 }

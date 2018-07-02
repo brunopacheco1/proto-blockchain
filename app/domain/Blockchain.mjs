@@ -1,3 +1,5 @@
+import crypto from "crypto"
+
 export default class Blochain {
   
   constructor() {
@@ -35,5 +37,21 @@ export default class Blochain {
 
   _getLastIndex() {
     return this._chain.length + 1
+  }
+  
+  hashBlock(previousBlockHash, currentBlockData, nonce) {
+    const toHash = previousBlockHash + nonce + JSON.stringify(currentBlockData)
+    return this._hash(toHash)
+  }
+
+  proofOfWork(previousBlockHash, currentBlockData) {
+    let nonce = 0
+    while(!this.hashBlock(previousBlockHash, currentBlockData, nonce).startsWith("0000")) nonce++
+    return nonce
+  }
+
+  _hash(message) {
+    const secret = "MY_SECRET"
+    return crypto.createHmac("sha256", secret).update(message).digest("hex")
   }
 }
