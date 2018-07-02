@@ -5,6 +5,7 @@ export default class Blochain {
   constructor() {
     this._chain=[]
     this._pendingTransactions=[]
+    this.createBlock(100, "0", "0")//Genesis block
   }
 
   createBlock(nonce, previousBlockHash, hash) {

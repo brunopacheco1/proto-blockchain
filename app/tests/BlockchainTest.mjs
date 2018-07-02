@@ -10,14 +10,14 @@ export default () => {
     const hash = "90ANSD9F0N9009N"
     mycoin.createBlock(nonce, previousBlockHash, hash)
     const chain = mycoin.getChain()
-    t.is(chain.length, 1)
-    t.is(chain[0].index, 1)
-    t.is(chain[0].nonce, nonce)
-    t.is(chain[0].previousBlockHash, previousBlockHash)
-    t.is(chain[0].hash, hash)
+    t.is(chain.length, 2)
+    t.is(chain[1].index, 2)
+    t.is(chain[1].nonce, nonce)
+    t.is(chain[1].previousBlockHash, previousBlockHash)
+    t.is(chain[1].hash, hash)
     const pedingTransactions = mycoin.getPendingTransactions()
     t.is(pedingTransactions.length, 0)
-    t.is(chain[0].transactions.length, 0)
+    t.is(chain[1].transactions.length, 0)
   })
 
   test("Creating a new transaction in the blockchain.", t => {
@@ -30,7 +30,7 @@ export default () => {
     t.is(pedingTransactions[0].sender, sender)
     t.is(pedingTransactions[0].recipient, recipient)
     t.is(pedingTransactions[0].amount, amount)
-    t.is(blockIndex, 2)
+    t.is(blockIndex, 3)
   })
   
   test("Creating a new block in the blockchain with transactions.", t => {
@@ -39,14 +39,14 @@ export default () => {
     const hash = "90ANSD9F0N9009N"
     mycoin.createBlock(nonce, previousBlockHash, hash)
     const chain = mycoin.getChain()
-    t.is(chain.length, 2)
-    t.is(chain[1].index, 2)
-    t.is(chain[1].nonce, nonce)
-    t.is(chain[1].previousBlockHash, previousBlockHash)
-    t.is(chain[1].hash, hash)
+    t.is(chain.length, 3)
+    t.is(chain[2].index, 3)
+    t.is(chain[2].nonce, nonce)
+    t.is(chain[2].previousBlockHash, previousBlockHash)
+    t.is(chain[2].hash, hash)
     const pedingTransactions = mycoin.getPendingTransactions()
     t.is(pedingTransactions.length, 0)
-    t.is(chain[1].transactions.length, 1)
+    t.is(chain[2].transactions.length, 1)
   })
 
   test("Hashing block.", t => {
