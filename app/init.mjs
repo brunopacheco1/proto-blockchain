@@ -2,6 +2,7 @@ import express from "express"
 import bodyParser from "body-parser"
 import validator from "express-validator"
 import cors from "cors"
+import blockchainRest from "./api/BlockchainRest"
 
 const NODE_PORT = process.env.PORT || 4000
 
@@ -25,6 +26,8 @@ export default () => {
     exposedHeaders: ["x-auth-token"]
   }
   app.use(cors(corsOption))
+
+  blockchainRest(app)
 
   return app
 }
