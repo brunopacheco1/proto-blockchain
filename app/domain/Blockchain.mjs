@@ -2,10 +2,22 @@ import crypto from "crypto"
 
 export default class Blochain {
   
-  constructor() {
+  constructor(nodeAddress) {
     this._chain=[]
     this._pendingTransactions=[]
     this.createBlock(100, "0", "0")//Genesis block
+    this._nodeAddress = nodeAddress
+  }
+
+  mine() {
+    const lastBlock = this._getLastBlock()
+    const previousBlockHash = lastBlock.hash
+    const currentBlockData = this._buildBlockData()
+    const nonce = this.proofOfWork(previousBlockHash, currentBlockData)
+    const hash = this.hashBlock(previousBlockHash, currentBlockData, nonce)
+    this.createTransaction(12.5, "00", this._nodeAddress)
+    this.createBlock(nonce, previousBlockHash, hash)
+    return this._getLastBlock()
   }
 
   createBlock(nonce, previousBlockHash, hash) {
@@ -15,10 +27,17 @@ export default class Blochain {
   }
 
   _buildBlock(nonce, previousBlockHash, hash) {
+    const block = this._buildBlockData()
+    block.timestamp = Date.now()
+    block.nonce = nonce
+    block.hash = hash
+    block.previousBlockHash = previousBlockHash
+    return block
+  }
+
+  _buildBlockData() {
     return {
-      index: this._getLastIndex(), timestamp: Date.now(), 
-      transactions: this._pendingTransactions, nonce: nonce,
-      hash, previousBlockHash
+      index: this._getCurrentIndex(), transactions: this._pendingTransactions
     }
   }
 
@@ -29,14 +48,18 @@ export default class Blochain {
   createTransaction(amount, sender, recipient) {
     const newTransaction = {amount, sender, recipient}
     this._pendingTransactions.push(newTransaction)
-    return this._getLastIndex()
+    return this._getCurrentIndex()
   }
 
   getPendingTransactions() {
     return this._pendingTransactions
   }
 
-  _getLastIndex() {
+  _getLastBlock() {
+    return this._chain[this._chain.length - 1]
+  }
+
+  _getCurrentIndex() {
     return this._chain.length + 1
   }
   

@@ -2,9 +2,9 @@ import Blockchain from "../domain/Blockchain"
 import test from "ava"
 
 export default () => {
-  const mycoin = new Blockchain()
+  const mycoin = new Blockchain("NODE_ADDRESS")
 
-  test("Creating a new block in the blockchain without transactions.", t => {
+  test("Creating a new block without transactions, expecting 2 blocks and the last has no transaction.", t => {
     const nonce = 2389
     const previousBlockHash = "0INA90SDNF90N"
     const hash = "90ANSD9F0N9009N"
@@ -20,20 +20,20 @@ export default () => {
     t.is(chain[1].transactions.length, 0)
   })
 
-  test("Creating a new transaction in the blockchain.", t => {
+  test("Creating a new transaction, expecting one pending transaction.", t => {
     const amount = 100
     const sender = "SENDER_1"
     const recipient = "RECIPIENT_2"
     const blockIndex = mycoin.createTransaction(amount, sender, recipient)
-    const pedingTransactions = mycoin.getPendingTransactions()
-    t.is(pedingTransactions.length, 1)
-    t.is(pedingTransactions[0].sender, sender)
-    t.is(pedingTransactions[0].recipient, recipient)
-    t.is(pedingTransactions[0].amount, amount)
+    const pendingTransactions = mycoin.getPendingTransactions()
+    t.is(pendingTransactions.length, 1)
+    t.is(pendingTransactions[0].sender, sender)
+    t.is(pendingTransactions[0].recipient, recipient)
+    t.is(pendingTransactions[0].amount, amount)
     t.is(blockIndex, 3)
   })
   
-  test("Creating a new block in the blockchain with transactions.", t => {
+  test("Creating a new block, expecting 3 blocks and the last with one transaction.", t => {
     const nonce = 2389
     const previousBlockHash = "0INA90SDNF90N"
     const hash = "90ANSD9F0N9009N"
@@ -49,18 +49,15 @@ export default () => {
     t.is(chain[2].transactions.length, 1)
   })
 
-  test("Hashing block.", t => {
+  test("Hashing block, expecting new hash starting with 0000.", t => {
     const nonce = 33601
     const previousBlockHash = "0INA90SDNF90N"
     const currentBlockData = {index: 0, timestamp: 0, transactions: []}
-
     const hash = mycoin.hashBlock(previousBlockHash, currentBlockData, nonce)
-    const toCompare = mycoin._hash(previousBlockHash + nonce + JSON.stringify(currentBlockData))
-    t.is(hash, toCompare)
     t.is(hash.substring(0,4), "0000")
   })
 
-  test("Proof of work.", t => {
+  test("Proof of work, expecting returning 33601 as nonce.", t => {
     const previousBlockHash = "0INA90SDNF90N"
     const currentBlockData = {index: 0, timestamp: 0, transactions: []}
     const nonce = mycoin.proofOfWork(previousBlockHash, currentBlockData)
