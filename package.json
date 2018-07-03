@@ -4,7 +4,13 @@
   "description": "A prototype for a blockchain in javascript.",
   "scripts": {
     "start": "node --experimental-modules main.mjs",
-    "test": "ava --verbose"
+    "dev": "nodemon --experimental-modules main.mjs",
+    "test": "ava --verbose --fail-fast --serial",
+    "node_1": "cross-env PORT=3001 NODE_URL=http://localhost:3001 npm run dev",
+    "node_2": "cross-env PORT=3002 NODE_URL=http://localhost:3002 npm run dev",
+    "node_3": "cross-env PORT=3003 NODE_URL=http://localhost:3003 npm run dev",
+    "node_4": "cross-env PORT=3004 NODE_URL=http://localhost:3004 npm run dev",
+    "node_5": "cross-env PORT=3005 NODE_URL=http://localhost:3005 npm run dev"
   },
   "repository": {
     "type": "git",
@@ -26,13 +32,17 @@
   },
   "devDependencies": {
     "ava": "1.0.0-beta.6",
+    "cross-env": "^5.2.0",
     "esm": "^3.0.61",
+    "nodemon": "^1.17.5",
     "supertest": "^3.1.0"
   },
   "dependencies": {
     "cors": "^2.8.4",
     "express": "^4.16.3",
     "express-validator": "^5.2.0",
+    "request": "^2.87.0",
+    "request-promise-native": "^1.0.5",
     "uuid": "^3.3.2"
   }
 }

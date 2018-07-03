@@ -2,7 +2,7 @@ import Blockchain from "../domain/Blockchain"
 import test from "ava"
 
 export default () => {
-  const mycoin = new Blockchain("NODE_ADDRESS")
+  const mycoin = new Blockchain("NODE_ADDRESS", "NODE_URL", () => new Promise(done => done("OK")))
 
   test("Creating a new block without transactions, expecting 2 blocks and the last has no transaction.", t => {
     const nonce = 2389
@@ -44,9 +44,9 @@ export default () => {
     t.is(chain[2].nonce, nonce)
     t.is(chain[2].previousBlockHash, previousBlockHash)
     t.is(chain[2].hash, hash)
+    t.is(chain[2].transactions.length, 1)
     const pedingTransactions = mycoin.getPendingTransactions()
     t.is(pedingTransactions.length, 0)
-    t.is(chain[2].transactions.length, 1)
   })
 
   test("Hashing block, expecting new hash starting with 0000.", t => {
@@ -62,5 +62,36 @@ export default () => {
     const currentBlockData = {index: 0, timestamp: 0, transactions: []}
     const nonce = mycoin.proofOfWork(previousBlockHash, currentBlockData)
     t.is(nonce, 33601)
+  })
+
+  test("Mining, expecting succeed.", t => {
+    const lastBlock = mycoin.mine()
+    t.is(lastBlock.index, 4)
+    t.is(lastBlock.hash.substring(0,4), "0000")
+    t.not(lastBlock.nonce, 0)
+    t.is(lastBlock.previousBlockHash, "90ANSD9F0N9009N")
+    t.is(lastBlock.transactions.length, 1)
+    t.is(lastBlock.transactions[0].amount, 12.5)
+    t.is(lastBlock.transactions[0].sender, "00")
+  })
+
+  test("Registering new node, expecting no changes.", async t => {
+    await mycoin.registerNodes(["NODE_URL"])
+    t.is(mycoin.getNetworkNodes().length, 0)
+  })
+
+  test("Registering new node, expecting succeed.", async t => {
+    await mycoin.registerNodes(["NODE_URL_1"])
+    t.is(mycoin.getNetworkNodes().length, 1)
+  })
+
+  test("Registering and broadcasting new node, expecting no changes.", async t => {
+    await mycoin.registerAndBroadcastNode(["NODE_URL_1"])
+    t.is(mycoin.getNetworkNodes().length, 2)
+  })
+
+  test("Registering and broadcasting new node, expecting succeed.", async t => {
+    await mycoin.registerAndBroadcastNode(["NODE_URL_2"])
+    t.is(mycoin.getNetworkNodes().length, 3)
   })
 }
