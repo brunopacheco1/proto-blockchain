@@ -94,10 +94,10 @@ export default class Blochain {
     if(this._nodeUrl != newNode && !this._networkNodes.includes(newNode)) {
       try {
         await this._requestService(`${newNode}/`)
-        console.log(`Node ${newNode} is up.`)
         this._networkNodes.push(newNode)
       } catch(e) {
         console.log(`Node ${newNode} out of order.`)
+        console.log(e)
       }
     }
   }
@@ -105,15 +105,13 @@ export default class Blochain {
   async registerAndBroadcastNode(newNode) {
     if(this._nodeUrl != newNode) {
       await this.registerNodes([newNode])
-      const toSend=[this._nodeUrl]
-      this._networkNodes.forEach(node => toSend.push(node))
+      const toSend=[...this._networkNodes, this._nodeUrl]
       await Promise.all(this._networkNodes.map(node => this._broadcastNodes(node, toSend)))
     }
   }
 
   async _broadcastNodes(node, newNodes) {
     try {
-      console.log(`Sending nodes[${newNodes}] to ${node}`)
       await this._requestService(`${node}/register`,{method: "POST", body:{newNodes},json: true})
     } catch(e) {
       console.log(e)
