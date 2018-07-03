@@ -2,7 +2,7 @@ import Blockchain from "../domain/Blockchain"
 import test from "ava"
 
 export default () => {
-  const mycoin = new Blockchain("NODE_ADDRESS", "NODE_URL", () => new Promise(done => done("OK")))
+  const mycoin = new Blockchain("DUMMIE_ID")
 
   test("Creating a new block without transactions, expecting 2 blocks and the last has no transaction.", t => {
     const nonce = 2389
@@ -73,25 +73,5 @@ export default () => {
     t.is(lastBlock.transactions.length, 1)
     t.is(lastBlock.transactions[0].amount, 12.5)
     t.is(lastBlock.transactions[0].sender, "00")
-  })
-
-  test("Registering new node, expecting no changes.", async t => {
-    await mycoin.registerNodes(["NODE_URL"])
-    t.is(mycoin.getNetworkNodes().length, 0)
-  })
-
-  test("Registering new node, expecting succeed.", async t => {
-    await mycoin.registerNodes(["NODE_URL_1"])
-    t.is(mycoin.getNetworkNodes().length, 1)
-  })
-
-  test("Registering and broadcasting new node, expecting no changes.", async t => {
-    await mycoin.registerAndBroadcastNode(["NODE_URL_1"])
-    t.is(mycoin.getNetworkNodes().length, 2)
-  })
-
-  test("Registering and broadcasting new node, expecting succeed.", async t => {
-    await mycoin.registerAndBroadcastNode(["NODE_URL_2"])
-    t.is(mycoin.getNetworkNodes().length, 3)
   })
 }

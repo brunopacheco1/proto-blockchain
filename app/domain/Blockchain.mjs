@@ -2,13 +2,10 @@ import crypto from "crypto"
 
 export default class Blochain {
   
-  constructor(nodeAddress, nodeUrl, request) {
+  constructor(nodeId) {
+    this._nodeId=nodeId
     this._chain=[]
     this._pendingTransactions=[]
-    this._nodeAddress=nodeAddress
-    this._nodeUrl=nodeUrl
-    this._networkNodes=[]
-    this._requestService = request
     this.createBlock(100, "0", "0")//Genesis block
   }
 
@@ -18,7 +15,7 @@ export default class Blochain {
     const currentBlockData = this._buildBlockData()
     const nonce = this.proofOfWork(previousBlockHash, currentBlockData)
     const hash = this.hashBlock(previousBlockHash, currentBlockData, nonce)
-    this.createTransaction(12.5, "00", this._nodeAddress)
+    this.createTransaction(12.5, "00", this._nodeId)
     this.createBlock(nonce, previousBlockHash, hash)
     return this._getLastBlock()
   }
@@ -80,41 +77,5 @@ export default class Blochain {
   _hash(message) {
     const secret = "MY_SECRET"
     return crypto.createHmac("sha256", secret).update(message).digest("hex")
-  }
-
-  async registerNodes(newNodes) {
-    await Promise.all(newNodes.map(newNode => this._checkIfUpAndAdd(newNode)))
-  }
-
-  getNetworkNodes() {
-    return this._networkNodes
-  }
-
-  async _checkIfUpAndAdd(newNode) {
-    if(this._nodeUrl != newNode && !this._networkNodes.includes(newNode)) {
-      try {
-        await this._requestService(`${newNode}/`)
-        this._networkNodes.push(newNode)
-      } catch(e) {
-        console.log(`Node ${newNode} out of order.`)
-        console.log(e)
-      }
-    }
-  }
-
-  async registerAndBroadcastNode(newNode) {
-    if(this._nodeUrl != newNode) {
-      await this.registerNodes([newNode])
-      const toSend=[...this._networkNodes, this._nodeUrl]
-      await Promise.all(this._networkNodes.map(node => this._broadcastNodes(node, toSend)))
-    }
-  }
-
-  async _broadcastNodes(node, newNodes) {
-    try {
-      await this._requestService(`${node}/register`,{method: "POST", body:{newNodes},json: true})
-    } catch(e) {
-      console.log(e)
-    }
   }
 }

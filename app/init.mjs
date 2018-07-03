@@ -3,6 +3,7 @@ import bodyParser from "body-parser"
 import validator from "express-validator"
 import cors from "cors"
 import blockchainRest from "./api/BlockchainRest"
+import networkRest from "./api/NetworkRest"
 import uuid from "uuid/v1"
 
 const NODE_PORT = process.env.PORT || 4000
@@ -15,7 +16,7 @@ export default () => {
   app.profile = {}
   app.profile.name = ENV
   app.profile.port = NODE_PORT
-  app.profile.nodeAddress = uuid().split("-").join("")
+  app.profile.nodeId = uuid().split("-").join("")
   app.profile.nodeUrl = NODE_URL
 
   app.use(bodyParser.urlencoded({extended: true}))
@@ -31,6 +32,7 @@ export default () => {
   app.use(cors(corsOption))
 
   blockchainRest(app)
-
+  networkRest(app)
+  
   return app
 }
