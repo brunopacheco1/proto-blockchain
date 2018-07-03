@@ -18,6 +18,15 @@ export default (request) => {
     t.is(response.body._pendingTransactions.length, 0)
   })
 
+  test("Request to /transaction, expecting 400.", async t => {
+    const newTransaction = {}
+    const response = await request.post("/transaction").send(newTransaction)
+    t.is(response.status, 400)
+    t.regex(response.text, /amount is a mandatory field/)
+    t.regex(response.text, /sender is a mandatory field/)
+    t.regex(response.text, /recipient is a mandatory field/)
+  })
+
   test("Request to /transaction, succeed expected.", async t => {
     const newTransaction = {amount: 300, sender: "SENDER_1", recipient: "RECIPIENT_2"}
     const response = await request.post("/transaction").send(newTransaction)
