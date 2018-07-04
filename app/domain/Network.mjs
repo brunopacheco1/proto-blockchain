@@ -26,9 +26,9 @@ export default class Network {
     }
   }
 
-  async registerAndBroadcastNode(newNode) {
-    if(this._nodeUrl != newNode) {
-      await this.registerNodes([newNode])
+  async registerAndBroadcastNodes(newNodes) {
+    if(newNodes.some(newNode => newNode != this._nodeUrl)) {
+      await this.registerNodes(newNodes)
       await Promise.all(this._networkNodes.map(node => this._broadcastNodes(node)))
     }
   }

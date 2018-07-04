@@ -13,16 +13,16 @@ export default (request) => {
     const body = {}
     let response = await request.post("/broadcast").send(body)
     t.is(response.status, 400)
-    t.regex(response.text, /newNode is a mandatory field and it should be an URL/)
+    t.regex(response.text, /newNodes is a mandatory field and it should be an array of URL/)
 
-    body.newNode = "asdasdasdas"
+    body.newNodes = ["asdasdasdas"]
     response = await request.post("/broadcast").send(body)
     t.is(response.status, 400)
-    t.regex(response.text, /newNode is a mandatory field and it should be an URL/)
+    t.regex(response.text, /newNodes is a mandatory field and it should be an array of URL/)
   })
 
   test("Request to /broadcast, succeed expected.", async t => {
-    const body = {newNode: "http://localhost:4000"}
+    const body = {newNodes: ["http://localhost:4000"]}
     let response = await request.post("/broadcast").send(body)
     t.is(response.status, 200)
   })

@@ -4,8 +4,7 @@ import request from "request-promise-native"
 import checkApi from "express-validator/check"
 const {checkSchema} = checkApi
 import transactionValidation from "../validation/transaction"
-import broadcastValidation from "../validation/broadcast"
-import registerValidation from "../validation/register"
+import nodesValidation from "../validation/nodes"
 import blockValidation from "../validation/block"
 
 export default app => {
@@ -71,27 +70,23 @@ export default app => {
     response.send(network)
   })
 
-  app.post("/broadcast", checkSchema(broadcastValidation), (request, response) => {
+  app.post("/broadcast", checkSchema(nodesValidation), (request, response) => {
     const errors = request.validationErrors()
     if(errors) {
       response.status(400).send({errors})
       return
     }
-
-    const newNode = request.body.newNode
-    network.registerAndBroadcastNode(newNode)
+    network.registerAndBroadcastNodes(request.body.newNodes)
     response.sendStatus(200)
   })
 
-  app.post("/register", checkSchema(registerValidation), (request, response) => {
+  app.post("/register", checkSchema(nodesValidation), (request, response) => {
     const errors = request.validationErrors()
     if(errors) {
       response.status(400).send({errors})
       return
     }
-    
-    const newNodes = request.body.newNodes
-    network.registerNodes(newNodes)
+    network.registerNodes(request.body.newNodes)
     response.sendStatus(200)
   })
 }
