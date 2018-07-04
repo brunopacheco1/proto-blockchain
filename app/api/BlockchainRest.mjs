@@ -6,7 +6,7 @@ const {checkSchema} = checkApi
 import transactionValidation from "../validation/transaction"
 import broadcastValidation from "../validation/broadcast"
 import registerValidation from "../validation/register"
-
+import blockValidation from "../validation/block"
 
 export default app => {
   const network = new Network(app.profile.nodeUrl, request)
@@ -34,7 +34,22 @@ export default app => {
     response.send({blockIndex})
   })
 
-  app.post("/transaction/broadcast", checkSchema(transactionValidation), (request, response) => {
+  app.post("/block", checkSchema(blockValidation), (request, response) => {
+    const errors = request.validationErrors()
+    if(errors) {
+      response.status(400).send({errors})
+      return
+    }
+    const block = request.body
+    try {
+      blockchain.receiveBlock(block)
+      response.sendStatus(200)
+    } catch(e) {
+      response.status(400).send({errors :[e.message]})
+    }
+  })
+
+  app.post("/transaction/broadcast", checkSchema(transactionValidation), async (request, response) => {
     const errors = request.validationErrors()
     if(errors) {
       response.status(400).send({errors})
@@ -43,12 +58,12 @@ export default app => {
     const amount = request.body.amount
     const sender = request.body.sender
     const recipient = request.body.recipient
-    const [blockIndex, _] = blockchain.createAndBroadcastTransaction(amount, sender, recipient)
+    const [blockIndex, _] = await blockchain.createAndBroadcastTransaction(amount, sender, recipient)
     response.send({blockIndex})
   })
 
-  app.post("/mine", (_, response) => {
-    const block = blockchain.mine()
+  app.post("/mine", async (_, response) => {
+    const block = await blockchain.mine()
     response.send(block)
   })
 

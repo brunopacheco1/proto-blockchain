@@ -11,21 +11,42 @@ export default class Blochain {
     this.createBlock(100, "0", "0")//Genesis block
   }
 
-  mine() {
+  async mine() {
     const lastBlock = this._getLastBlock()
     const previousBlockHash = lastBlock.hash
     const currentBlockData = this._buildBlockData()
     const nonce = this.proofOfWork(previousBlockHash, currentBlockData)
     const hash = this.hashBlock(previousBlockHash, currentBlockData, nonce)
-    this.createTransaction(12.5, "00", this._nodeId)
-    this.createBlock(nonce, previousBlockHash, hash)
-    return this._getLastBlock()
+    const newBlock = await this.createAndBroadcastBlock(nonce, previousBlockHash, hash)
+    await this.createAndBroadcastTransaction(12.5, "00", this._nodeId)
+    return newBlock
+  }
+
+  receiveBlock(newBlock) {
+    if(this._validateNewBlock(newBlock)){
+      this._chain.push(newBlock)
+      this._pendingTransactions=[]
+    } else {
+      throw new Error("Invalid block")
+    }
+  }
+
+  _validateNewBlock(block) {
+    const l = this._getLastBlock()
+    return l.hash == block.previousBlockHash && block.index == this._getCurrentIndex()
   }
 
   createBlock(nonce, previousBlockHash, hash) {
     const newBlock = this._buildBlock(nonce, previousBlockHash, hash)
     this._pendingTransactions=[]
     this._chain.push(newBlock)
+    return newBlock
+  }
+
+  async createAndBroadcastBlock(nonce, previousBlockHash, hash) {
+    const newBlock = this.createBlock(nonce, previousBlockHash, hash)
+    await this._network.broadcastBlock(newBlock)
+    return newBlock
   }
 
   _buildBlock(nonce, previousBlockHash, hash) {
@@ -54,9 +75,9 @@ export default class Blochain {
     return [this._getCurrentIndex(), newTransaction]
   }
 
-  createAndBroadcastTransaction(amount, sender, recipient) {
+  async createAndBroadcastTransaction(amount, sender, recipient) {
     const [blockIndex, newTransaction] = this.createTransaction(amount, sender, recipient)
-    this._network.broadcastTransaction(newTransaction)
+    await this._network.broadcastTransaction(newTransaction)
     return [blockIndex, newTransaction]
   }
 

@@ -51,4 +51,14 @@ export default class Network {
       console.log(e)
     }
   }
+
+  async broadcastBlock(block) {
+    try {
+      const opt = {method: "POST", body: block, json: true}
+      const req = this._networkNodes.map(node => this._requestService(`${node}/block`, opt))
+      await Promise.all(req)
+    } catch(e) {
+      console.log(e)
+    }
+  }
 }
