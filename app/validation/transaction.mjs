@@ -20,5 +20,13 @@ export default {
       options: { min: 3 }
     },
     optional: false
+  },
+  transactionId: {
+    errorMessage: "transactionId is a mandatory field",
+    isLength: {
+      errorMessage: "transactionId is a mandatory field",
+      options: { min: 3 }
+    },
+    optional: true
   }
 }

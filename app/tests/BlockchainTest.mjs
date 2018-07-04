@@ -2,7 +2,7 @@ import Blockchain from "../domain/Blockchain"
 import test from "ava"
 
 export default () => {
-  const mycoin = new Blockchain("DUMMIE_ID")
+  const mycoin = new Blockchain("DUMMIE_ID", {broadcastTransaction: () => {}})
 
   test("Creating a new block without transactions, expecting 2 blocks and the last has no transaction.", t => {
     const nonce = 2389
@@ -24,16 +24,39 @@ export default () => {
     const amount = 100
     const sender = "SENDER_1"
     const recipient = "RECIPIENT_2"
-    const blockIndex = mycoin.createTransaction(amount, sender, recipient)
+    const [blockIndex, newTransaction] = mycoin.createTransaction(amount, sender, recipient)
+    t.is(blockIndex, 3)
     const pendingTransactions = mycoin.getPendingTransactions()
     t.is(pendingTransactions.length, 1)
     t.is(pendingTransactions[0].sender, sender)
     t.is(pendingTransactions[0].recipient, recipient)
     t.is(pendingTransactions[0].amount, amount)
+    t.regex(pendingTransactions[0].transactionId, /.+/)
+    t.is(newTransaction.sender, pendingTransactions[0].sender)
+    t.is(newTransaction.recipient, pendingTransactions[0].recipient)
+    t.is(newTransaction.amount, pendingTransactions[0].amount)
+    t.is(newTransaction.transactionId, pendingTransactions[0].transactionId)
+  })
+
+  test("Creating and broadcasting a new transaction, expecting one new pending transaction.", t => {
+    const amount = 100
+    const sender = "SENDER_2"
+    const recipient = "RECIPIENT_3"
+    const [blockIndex, newTransaction] = mycoin.createAndBroadcastTransaction(amount, sender, recipient)
+    const pendingTransactions = mycoin.getPendingTransactions()
     t.is(blockIndex, 3)
+    t.is(pendingTransactions.length, 2)
+    t.is(pendingTransactions[1].sender, sender)
+    t.is(pendingTransactions[1].recipient, recipient)
+    t.is(pendingTransactions[1].amount, amount)
+    t.regex(pendingTransactions[1].transactionId, /.+/)
+    t.is(newTransaction.sender, pendingTransactions[1].sender)
+    t.is(newTransaction.recipient, pendingTransactions[1].recipient)
+    t.is(newTransaction.amount, pendingTransactions[1].amount)
+    t.is(newTransaction.transactionId, pendingTransactions[1].transactionId)
   })
   
-  test("Creating a new block, expecting 3 blocks and the last with one transaction.", t => {
+  test("Creating a new block, expecting 3 blocks and the last with two transactions.", t => {
     const nonce = 2389
     const previousBlockHash = "0INA90SDNF90N"
     const hash = "90ANSD9F0N9009N"
@@ -44,7 +67,7 @@ export default () => {
     t.is(chain[2].nonce, nonce)
     t.is(chain[2].previousBlockHash, previousBlockHash)
     t.is(chain[2].hash, hash)
-    t.is(chain[2].transactions.length, 1)
+    t.is(chain[2].transactions.length, 2)
     const pedingTransactions = mycoin.getPendingTransactions()
     t.is(pedingTransactions.length, 0)
   })

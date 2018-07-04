@@ -41,4 +41,14 @@ export default class Network {
       console.log(e)
     }
   }
+
+  async broadcastTransaction(transaction) {
+    try {
+      const opt = {method: "POST", body: transaction, json: true}
+      const req = this._networkNodes.map(node => this._requestService(`${node}/transaction`, opt))
+      await Promise.all(req)
+    } catch(e) {
+      console.log(e)
+    }
+  }
 }

@@ -19,17 +19,35 @@ export default (request) => {
   })
 
   test("Request to /transaction, expecting 400.", async t => {
-    const newTransaction = {}
+    const newTransaction = {transactionId: ""}
     const response = await request.post("/transaction").send(newTransaction)
     t.is(response.status, 400)
     t.regex(response.text, /amount is a mandatory field/)
     t.regex(response.text, /sender is a mandatory field/)
     t.regex(response.text, /recipient is a mandatory field/)
+    t.regex(response.text, /transactionId is a mandatory field/)
   })
 
   test("Request to /transaction, succeed expected.", async t => {
     const newTransaction = {amount: 300, sender: "SENDER_1", recipient: "RECIPIENT_2"}
     const response = await request.post("/transaction").send(newTransaction)
+    t.is(response.status, 200)
+    t.is(response.body.blockIndex, 2)
+  })
+
+  test("Request to /transaction/broadcast, expecting 400.", async t => {
+    const newTransaction = {transactionId: ""}
+    const response = await request.post("/transaction/broadcast").send(newTransaction)
+    t.is(response.status, 400)
+    t.regex(response.text, /amount is a mandatory field/)
+    t.regex(response.text, /sender is a mandatory field/)
+    t.regex(response.text, /recipient is a mandatory field/)
+    t.regex(response.text, /transactionId is a mandatory field/)
+  })
+
+  test("Request to /transaction/broadcast, succeed expected.", async t => {
+    const newTransaction = {amount: 300, sender: "SENDER_1", recipient: "RECIPIENT_2"}
+    const response = await request.post("/transaction/broadcast").send(newTransaction)
     t.is(response.status, 200)
     t.is(response.body.blockIndex, 2)
   })
@@ -42,12 +60,15 @@ export default (request) => {
     
     t.is(block.hash.substring(0, 4), "0000")
     t.is(block.previousBlockHash, "0")
-    t.is(block.transactions.length, 2)
+    t.is(block.transactions.length, 3)
     t.is(block.index, 2)
     t.is(block.transactions[0].amount, 300)
     t.is(block.transactions[0].sender, "SENDER_1")
     t.is(block.transactions[0].recipient, "RECIPIENT_2")
-    t.is(block.transactions[1].amount, 12.5)
-    t.is(block.transactions[1].sender, "00")
+    t.is(block.transactions[1].amount, 300)
+    t.is(block.transactions[1].sender, "SENDER_1")
+    t.is(block.transactions[1].recipient, "RECIPIENT_2")
+    t.is(block.transactions[2].amount, 12.5)
+    t.is(block.transactions[2].sender, "00")
   })
 }

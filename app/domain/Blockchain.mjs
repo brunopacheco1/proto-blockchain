@@ -1,11 +1,13 @@
 import crypto from "crypto"
+import uuid from "uuid/v1"
 
 export default class Blochain {
   
-  constructor(nodeId) {
+  constructor(nodeId, network) {
     this._nodeId=nodeId
     this._chain=[]
     this._pendingTransactions=[]
+    this._network=network
     this.createBlock(100, "0", "0")//Genesis block
   }
 
@@ -45,10 +47,17 @@ export default class Blochain {
     return this._chain
   }
 
-  createTransaction(amount, sender, recipient) {
-    const newTransaction = {amount, sender, recipient}
+  createTransaction(amount, sender, recipient, transactionId) {
+    const newTransactionId = transactionId || uuid().split("-").join("")
+    const newTransaction = {amount, sender, recipient, transactionId: newTransactionId}
     this._pendingTransactions.push(newTransaction)
-    return this._getCurrentIndex()
+    return [this._getCurrentIndex(), newTransaction]
+  }
+
+  createAndBroadcastTransaction(amount, sender, recipient) {
+    const [blockIndex, newTransaction] = this.createTransaction(amount, sender, recipient)
+    this._network.broadcastTransaction(newTransaction)
+    return [blockIndex, newTransaction]
   }
 
   getPendingTransactions() {
