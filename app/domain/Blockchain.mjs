@@ -108,4 +108,22 @@ export default class Blochain {
     const secret = "MY_SECRET"
     return crypto.createHmac("sha256", secret).update(message).digest("hex")
   }
+
+  chainIsValid(chain) {
+    for(let i = 1; i < chain.length; i++) {
+      const curBlock = chain[i]
+      const prevBlock = chain[i-1]
+      const curBlockData = {index: curBlock.index, transactions: curBlock.transactions}
+      const hash = this.hashBlock(prevBlock.hash, curBlockData, curBlock.nonce)
+      if(hash.substring(0,4) != "0000") return false
+      if(curBlock.previousBlockHash != prevBlock.hash) return false
+    }
+    const gb = chain[0]
+    return gb.nonce == 100 && gb.previousBlockHash == "0" && gb.hash == "0" && gb.transactions.length == 0
+  }
+
+  reachConsensus() {
+    const chains = this._network.getChainsFromNodes()
+    return chains
+  }
 }

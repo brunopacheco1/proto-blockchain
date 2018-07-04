@@ -61,4 +61,14 @@ export default class Network {
       console.log(e)
     }
   }
+
+  async getChainsFromNodes() {
+    try {
+      const promises = this._networkNodes.map(node => this._requestService(`${node}/blockchain`, {json: true}))
+      const responses = await Promise.all(promises)
+      return responses.map(response => response._chain)
+    } catch(e) {
+      throw new Error(e)
+    }
+  }
 }

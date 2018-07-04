@@ -89,4 +89,9 @@ export default app => {
     network.registerNodes(request.body.newNodes)
     response.sendStatus(200)
   })
+
+  app.get("/consensus", async (_, response) => {
+    const chains = await blockchain.reachConsensus()
+    response.send(chains)
+  })
 }
