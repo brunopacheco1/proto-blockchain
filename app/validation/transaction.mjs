@@ -9,7 +9,7 @@ export default {
     errorMessage: "sender is a mandatory field",
     isLength: {
       errorMessage: "sender is a mandatory field",
-      options: { min: 3 }
+      options: { min: 1 }
     },
     optional: false
   },
@@ -17,7 +17,7 @@ export default {
     errorMessage: "recipient is a mandatory field",
     isLength: {
       errorMessage: "recipient is a mandatory field",
-      options: { min: 3 }
+      options: { min: 1 }
     },
     optional: false
   },
@@ -25,7 +25,7 @@ export default {
     errorMessage: "transactionId is a mandatory field",
     isLength: {
       errorMessage: "transactionId is a mandatory field",
-      options: { min: 3 }
+      options: { min: 1 }
     },
     optional: true
   }
