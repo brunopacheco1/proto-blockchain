@@ -134,4 +134,32 @@ export default class Blochain {
       this._pendingTransactions = longestBlockchain._pendingTransactions
     }
   }
+
+  getBlock(hash) {
+    let blockFound = null
+    this._chain.forEach(block => {
+      if(block.hash == hash) blockFound = block
+    })
+    return blockFound
+  }
+
+  getTransaction(transactionId) {
+    let transactionFound = null
+    this._chain.forEach(block => {
+      block.transactions.forEach(transaction => {
+        if(transaction.transactionId == transactionId) transactionFound = transaction
+      })
+    })
+    return transactionFound
+  }
+
+  getTransactionsByAddress(address) {
+    const transactionsFound = []
+    this._chain.forEach(block => {
+      block.transactions.forEach(transaction => {
+        if(transaction.recipient == address || transaction.sender == address) transactionsFound.push(transaction)
+      })
+    })
+    return transactionsFound
+  }
 }

@@ -94,4 +94,22 @@ export default app => {
     await blockchain.consensus()
     response.sendStatus(200)
   })
+
+  app.get("/block/:hash", (request, response) => {
+    const hash = request.params.hash
+    const block = blockchain.getBlock(hash)
+    response.send(block)
+  })
+
+  app.get("/transaction/:id", (request, response) => {
+    const id = request.params.id
+    const transaction = blockchain.getTransaction(id)
+    response.send(transaction)
+  })
+
+  app.get("/address/:address", (request, response) => {
+    const address = request.params.address
+    const transactions = blockchain.getTransactionsByAddress(address)
+    response.send(transactions)
+  })
 }

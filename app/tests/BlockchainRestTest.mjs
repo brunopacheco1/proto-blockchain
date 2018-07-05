@@ -47,11 +47,11 @@ export default (request) => {
   test("Request to /block, succeed expected.", async t => {
     const block = {
       index: 2,
-        transactions: [],
-        timestamp: 1530702661337,
-        nonce: 153012,
-        hash: "TESTES",
-        previousBlockHash: "0"
+      transactions: [],
+      timestamp: 1530702661337,
+      nonce: 153012,
+      hash: "TESTES",
+      previousBlockHash: "0"
     }
     const response = await request.post("/block").send(block)
     t.is(response.status, 200)
@@ -68,7 +68,7 @@ export default (request) => {
   })
 
   test("Request to /transaction, succeed expected.", async t => {
-    const newTransaction = {amount: 300, sender: "SENDER_1", recipient: "RECIPIENT_2"}
+    const newTransaction = {transactionId: "NEW_TRANSACTION", amount: 300, sender: "SENDER_1", recipient: "RECIPIENT_2"}
     const response = await request.post("/transaction").send(newTransaction)
     t.is(response.status, 200)
     t.is(response.body.blockIndex, 3)
@@ -112,5 +112,50 @@ export default (request) => {
   test("Request to /consensus, succeed expected.", async t => {
     const response = await request.post("/consensus")
     t.is(response.status, 200)
+  })
+
+  test("Request to /block/:id, succeed expected.", async t => {
+    const response = await request.get("/block/TESTES")
+    const block = response.body
+    t.is(block.index, 2)
+    t.is(block.transactions.length, 0)
+    t.is(block.timestamp, 1530702661337)
+    t.is(block.hash, "TESTES")
+    t.is(block.previousBlockHash, "0")
+  })
+
+  test("Request to /transaction/:id, succeed expected.", async t => {
+    const response = await request.get("/transaction/NEW_TRANSACTION")
+    const transaction = response.body
+    t.is(response.status, 200)
+    t.is(transaction.transactionId, "NEW_TRANSACTION")
+    t.is(transaction.amount, 300)
+    t.is(transaction.sender, "SENDER_1")
+    t.is(transaction.recipient, "RECIPIENT_2")
+  })
+
+  test("Request to /address/:address, succeed expected.", async t => {
+    const response = await request.get("/address/RECIPIENT_2")
+    const transactions = response.body
+    t.is(response.status, 200)
+    t.is(transactions.length, 2)
+  })
+
+  test("Request to /block/:id, null expected.", async t => {
+    const response = await request.get("/block/blablabla")
+    t.is(response.status, 200)
+    t.is(response.text.length, 0)
+  })
+
+  test("Request to /transaction/:id, null expected.", async t => {
+    const response = await request.get("/transaction/blablabla")
+    t.is(response.status, 200)
+    t.is(response.text.length, 0)
+  })
+
+  test("Request to /address/:address, empty expected.", async t => {
+    const response = await request.get("/address/blablabla")
+    t.is(response.status, 200)
+    t.regex(response.text, /\[\]/)
   })
 }

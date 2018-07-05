@@ -118,8 +118,8 @@ export default () => {
     t.is(pedingTransactions.length, 0)
   })
 
-  test("Validate a receiving new block, succeed expected.", async t => {
-    const block = { index: 6, hash: "90ANSD9F0N9009NAS", previousBlockHash: "90ANSD9F0N9009N" }
+  test("Validate a receiving new block, succeed expected.", t => {
+    const block = { index: 6, hash: "90ANSD9F0N9009NAS", previousBlockHash: "90ANSD9F0N9009N", transactions: [{transactionId: "NEW_TRANSACTION", amount: 100, sender: "NEW_SENDER", recipient: "NEW_RECIPIENT"}]}
     blockchain.receiveBlock(block)
     const chain = blockchain.getChain()
     t.is(chain.length, 6)
@@ -128,13 +128,51 @@ export default () => {
     t.is(chain[5].hash, block.hash)
   })
 
-  test("Validate a receiving new block, expecting an error.", async t => {
-    const block = { index: 6, hash: "BLABLABLA", previousBlockHash: "DUMMIE_PREVIOUS" }
+  test("Validate a receiving new block, expecting an error.", t => {
+    const block = { index: 6, hash: "BLABLABLA", previousBlockHash: "DUMMIE_PREVIOUS", transactions: [] }
     
     const error = t.throws(() => {
       blockchain.receiveBlock(block)
-    }, Error);
+    }, Error)
   
-    t.is(error.message, "Invalid block");
+    t.is(error.message, "Invalid block")
+  })
+
+  test("Getting a block by hash, expecting null return.", t => {
+    const block = blockchain.getBlock("asdasdasd")
+    t.is(block, null)
+  })
+
+  test("Getting a block by hash, expecting a return.", t => {
+    const block = blockchain.getBlock("90ANSD9F0N9009NAS")
+    t.is(block.index, 6)
+    t.is(block.previousBlockHash, "90ANSD9F0N9009N")
+    t.is(block.hash, "90ANSD9F0N9009NAS")
+  })
+
+  test("Getting a transaction by id, expecting null return.", t => {
+    const transaction = blockchain.getTransaction("gcfhgfhgfgh")
+    t.is(transaction, null)
+  })
+
+  test("Getting a transaction by id, expecting a return.", t => {
+    const transaction = blockchain.getTransaction("NEW_TRANSACTION")
+    t.is(transaction.transactionId, "NEW_TRANSACTION")
+    t.is(transaction.amount, 100)
+    t.is(transaction.sender, "NEW_SENDER")
+    t.is(transaction.recipient, "NEW_RECIPIENT")
+  })
+
+  test("Getting a transactions by address, expecting a return.", t => {
+    const transactions = blockchain.getTransactionsByAddress("RECIPIENT_3")
+    t.is(transactions.length, 1)
+    t.is(transactions[0].amount, 100)
+    t.is(transactions[0].sender, "SENDER_2")
+    t.is(transactions[0].recipient, "RECIPIENT_3")
+  })
+
+  test("Getting a transactions by address, expecting empty return.", t => {
+    const transactions = blockchain.getTransactionsByAddress("fjhfjhfjf")
+    t.is(transactions.length, 0)
   })
 }
