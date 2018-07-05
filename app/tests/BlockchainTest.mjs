@@ -5,19 +5,17 @@ export default () => {
   const blockchain = new Blockchain("DUMMIE_ID", {broadcastTransaction: () => {}, broadcastBlock: () => {}})
 
   test("Creating a new block without transactions, expecting 2 blocks and the last has no transaction.", t => {
-    const nonce = 2389
-    const previousBlockHash = "0INA90SDNF90N"
-    const hash = "90ANSD9F0N9009N"
-    blockchain.createBlock(nonce, previousBlockHash, hash)
+    blockchain.createBlock()
     const chain = blockchain.getChain()
     t.is(chain.length, 2)
     t.is(chain[1].index, 2)
-    t.is(chain[1].nonce, nonce)
-    t.is(chain[1].previousBlockHash, previousBlockHash)
-    t.is(chain[1].hash, hash)
+    t.is(chain[1].transactions.length, 0)
     const pedingTransactions = blockchain.getPendingTransactions()
     t.is(pedingTransactions.length, 0)
     t.is(chain[1].transactions.length, 0)
+    t.not(chain[1].nonce, 0)
+    t.is(chain[1].previousBlockHash, "0")
+    t.is(chain[1].hash.substring(0,4), "0000")
   })
 
   test("Creating a new transaction, expecting one pending transaction.", t => {
@@ -57,43 +55,38 @@ export default () => {
   })
   
   test("Creating a new block, expecting 3 blocks and the last with two transactions.", t => {
-    const nonce = 2389
-    const previousBlockHash = "0INA90SDNF90N"
-    const hash = "90ANSD9F0N9009N"
-    blockchain.createBlock(nonce, previousBlockHash, hash)
+    blockchain.createBlock()
     const chain = blockchain.getChain()
     t.is(chain.length, 3)
     t.is(chain[2].index, 3)
-    t.is(chain[2].nonce, nonce)
-    t.is(chain[2].previousBlockHash, previousBlockHash)
-    t.is(chain[2].hash, hash)
+    t.not(chain[2].nonce, 0)
+    t.not(chain[2].previousBlockHash, "0")
+    t.is(chain[2].hash.substring(0,4), "0000")
     t.is(chain[2].transactions.length, 2)
     const pedingTransactions = blockchain.getPendingTransactions()
     t.is(pedingTransactions.length, 0)
   })
 
-  test("Hashing block, expecting new hash starting with 0000.", t => {
-    const nonce = 33601
-    const previousBlockHash = "0INA90SDNF90N"
-    const currentBlockData = {index: 0, timestamp: 0, transactions: []}
-    const hash = blockchain.hashBlock(previousBlockHash, currentBlockData, nonce)
-    t.is(hash.substring(0,4), "0000")
+  test("Proof of work, expecting returning 33601 as nonce.", t => {
+    const block = {index: 0, timestamp: 0, transactions: [], previousBlockHash: "0INA90SDNF90N"}
+    const nonce = blockchain.proofOfWork(block)
+    t.is(nonce, 59443)
   })
 
-  test("Proof of work, expecting returning 33601 as nonce.", t => {
-    const previousBlockHash = "0INA90SDNF90N"
-    const currentBlockData = {index: 0, timestamp: 0, transactions: []}
-    const nonce = blockchain.proofOfWork(previousBlockHash, currentBlockData)
-    t.is(nonce, 33601)
+  test("Hashing block, expecting new hash starting with 0000.", t => {
+    const block = {index: 0, timestamp: 0, transactions: [], previousBlockHash: "0INA90SDNF90N", nonce: 59443}
+    const hash = blockchain.hashBlock(block)
+    t.is(hash.substring(0,4), "0000")
   })
 
   test("Mining, expecting succeed.", async t => {
     const lastBlock = await blockchain.mine()
+    const previousBlock = blockchain.getChain()[blockchain.getChain().length - 2]
     const pedingTransactions = blockchain.getPendingTransactions()
     t.is(lastBlock.index, 4)
     t.is(lastBlock.hash.substring(0,4), "0000")
     t.not(lastBlock.nonce, 0)
-    t.is(lastBlock.previousBlockHash, "90ANSD9F0N9009N")
+    t.is(lastBlock.previousBlockHash, previousBlock.hash)
     t.is(lastBlock.transactions.length, 0)
     t.is(pedingTransactions.length, 1)
     t.is(pedingTransactions[0].amount, 12.5)
@@ -101,25 +94,27 @@ export default () => {
   })
 
   test("Creating and broadcast a new block, expecting 5 blocks and empty pending transactions.", async t => {
-    const nonce = 2389
-    const previousBlockHash = "0INA90SDNF90N"
-    const hash = "90ANSD9F0N9009N"
-    await blockchain.createAndBroadcastBlock(nonce, previousBlockHash, hash)
+    const lastBlock = await blockchain.createAndBroadcastBlock()
+    const previousBlock = blockchain.getChain()[blockchain.getChain().length - 2]
     const chain = blockchain.getChain()
     t.is(chain.length, 5)
-    t.is(chain[4].index, 5)
-    t.is(chain[4].nonce, nonce)
-    t.is(chain[4].previousBlockHash, previousBlockHash)
-    t.is(chain[4].hash, hash)
-    t.is(chain[4].transactions.length, 1)
-    t.is(chain[4].transactions[0].amount, 12.5)
-    t.is(chain[4].transactions[0].sender, "00")
+    t.is(lastBlock.index, 5)
+    t.not(lastBlock.nonce, 0)
+    t.is(lastBlock.previousBlockHash, previousBlock.hash)
+    t.is(lastBlock.hash.substring(0,4), "0000")
+    t.is(lastBlock.transactions.length, 1)
+    t.is(lastBlock.transactions[0].amount, 12.5)
+    t.is(lastBlock.transactions[0].sender, "00")
     const pedingTransactions = blockchain.getPendingTransactions()
     t.is(pedingTransactions.length, 0)
   })
 
   test("Validate a receiving new block, succeed expected.", t => {
-    const block = { index: 6, hash: "90ANSD9F0N9009NAS", previousBlockHash: "90ANSD9F0N9009N", transactions: [{transactionId: "NEW_TRANSACTION", amount: 100, sender: "NEW_SENDER", recipient: "NEW_RECIPIENT"}]}
+    const lastBlock = blockchain.getLastBlock()
+    const transactions = [{transactionId: "NEW_TRANSACTION", amount: 100, sender: "NEW_SENDER", recipient: "NEW_RECIPIENT"}]
+    const block = {index: 6, timestamp: Date.now(), previousBlockHash: lastBlock.hash, transactions}
+    block.nonce = blockchain.proofOfWork(block)
+    block.hash = blockchain.hashBlock(block)
     blockchain.receiveBlock(block)
     const chain = blockchain.getChain()
     t.is(chain.length, 6)
@@ -144,10 +139,9 @@ export default () => {
   })
 
   test("Getting a block by hash, expecting a return.", t => {
-    const block = blockchain.getBlock("90ANSD9F0N9009NAS")
+    const hash = blockchain.getLastBlock().hash
+    const block = blockchain.getBlock(hash)
     t.is(block.index, 6)
-    t.is(block.previousBlockHash, "90ANSD9F0N9009N")
-    t.is(block.hash, "90ANSD9F0N9009NAS")
   })
 
   test("Getting a transaction by id, expecting null return.", t => {

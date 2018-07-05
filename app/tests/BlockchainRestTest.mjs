@@ -30,14 +30,28 @@ export default (request) => {
     t.regex(response.text, /previousBlockHash is a mandatory field/)
   })
 
-  test("Request to /block, expecting invalid block response.", async t => {
+  test("Request to /block, expecting invalid block response as previousBlockHash and the index are invalid.", async t => {
     const block = {
       index: 49,
-        transactions: [],
-        timestamp: 1530702661337,
-        nonce: 153012,
-        hash: "TESTES",
-        previousBlockHash: "0asdasd"
+      transactions: [],
+      timestamp: 1530702661337,
+      nonce: 153012,
+      hash: "TESTES",
+      previousBlockHash: "0asdasd"
+    }
+    const response = await request.post("/block").send(block)
+    t.is(response.status, 400)
+    t.regex(response.text, /Invalid block/)
+  })
+
+  test("Request to /block, expecting invalid block response as the hash is invalid.", async t => {
+    const block = {
+      index: 2,
+      transactions: [],
+      timestamp: 1530702661337,
+      nonce: 153012,
+      hash: "TESTES",
+      previousBlockHash: "0"
     }
     const response = await request.post("/block").send(block)
     t.is(response.status, 400)
@@ -48,10 +62,10 @@ export default (request) => {
     const block = {
       index: 2,
       transactions: [],
-      timestamp: 1530702661337,
-      nonce: 153012,
-      hash: "TESTES",
-      previousBlockHash: "0"
+      timestamp: 1530794627195,
+      previousBlockHash: "0",
+      nonce: 19481,
+      hash: "00003858510f18b2c099bc084fd42a8b5c234f1b0c05ff91cb41179c2f7c90c7"
     }
     const response = await request.post("/block").send(block)
     t.is(response.status, 200)
@@ -98,7 +112,7 @@ export default (request) => {
     const block = response.body
     
     t.is(block.hash.substring(0, 4), "0000")
-    t.is(block.previousBlockHash, "TESTES")
+    t.is(block.previousBlockHash, "00003858510f18b2c099bc084fd42a8b5c234f1b0c05ff91cb41179c2f7c90c7")
     t.is(block.transactions.length, 2)
     t.is(block.index, 3)
     t.is(block.transactions[0].amount, 300)
@@ -115,12 +129,12 @@ export default (request) => {
   })
 
   test("Request to /block/:id, succeed expected.", async t => {
-    const response = await request.get("/block/TESTES")
+    const response = await request.get("/block/00003858510f18b2c099bc084fd42a8b5c234f1b0c05ff91cb41179c2f7c90c7")
     const block = response.body
     t.is(block.index, 2)
     t.is(block.transactions.length, 0)
-    t.is(block.timestamp, 1530702661337)
-    t.is(block.hash, "TESTES")
+    t.is(block.timestamp, 1530794627195)
+    t.is(block.hash, "00003858510f18b2c099bc084fd42a8b5c234f1b0c05ff91cb41179c2f7c90c7")
     t.is(block.previousBlockHash, "0")
   })
 
