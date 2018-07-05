@@ -90,8 +90,8 @@ export default app => {
     response.sendStatus(200)
   })
 
-  app.get("/consensus", async (_, response) => {
-    const chains = await blockchain.reachConsensus()
-    response.send(chains)
+  app.post("/consensus", async (_, response) => {
+    await blockchain.consensus()
+    response.sendStatus(200)
   })
 }

@@ -108,4 +108,9 @@ export default (request) => {
     t.is(block.transactions[1].sender, "SENDER_1")
     t.is(block.transactions[1].recipient, "RECIPIENT_2")
   })
+
+  test("Request to /consensus, succeed expected.", async t => {
+    const response = await request.post("/consensus")
+    t.is(response.status, 200)
+  })
 }

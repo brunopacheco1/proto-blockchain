@@ -118,12 +118,20 @@ export default class Blochain {
       if(hash.substring(0,4) != "0000") return false
       if(curBlock.previousBlockHash != prevBlock.hash) return false
     }
-    const gb = chain[0]
+    const gb = chain[0] //genesis block
     return gb.nonce == 100 && gb.previousBlockHash == "0" && gb.hash == "0" && gb.transactions.length == 0
   }
 
-  reachConsensus() {
-    const chains = this._network.getChainsFromNodes()
-    return chains
+  async consensus() {
+    const blockchains = await this._network.getChainsFromNodes()
+    let longestBlockchain = null
+    let longestLength = this._chain.length
+    blockchains.forEach(blockchain => {
+      if(blockchain._chain.length > longestLength) longestBlockchain = blockchain
+    })
+    if(longestBlockchain && this.chainIsValid(longestBlockchain._chain)) {
+      this._chain = longestBlockchain._chain
+      this._pendingTransactions = longestBlockchain._pendingTransactions
+    }
   }
 }
