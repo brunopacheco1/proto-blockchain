@@ -33,6 +33,25 @@ export default app => {
     response.send({blockIndex})
   })
 
+  app.post("/transaction/broadcast", checkSchema(transactionValidation), async (request, response) => {
+    const errors = request.validationErrors()
+    if(errors) {
+      response.status(400).send({errors})
+      return
+    }
+    const amount = request.body.amount
+    const sender = request.body.sender
+    const recipient = request.body.recipient
+    const [blockIndex, _] = await blockchain.createAndBroadcastTransaction(amount, sender, recipient)
+    response.send({blockIndex})
+  })
+
+  app.get("/transaction/:id", (request, response) => {
+    const id = request.params.id
+    const transaction = blockchain.getTransaction(id)
+    response.send(transaction)
+  })
+
   app.post("/block", checkSchema(blockValidation), (request, response) => {
     const errors = request.validationErrors()
     if(errors) {
@@ -48,17 +67,10 @@ export default app => {
     }
   })
 
-  app.post("/transaction/broadcast", checkSchema(transactionValidation), async (request, response) => {
-    const errors = request.validationErrors()
-    if(errors) {
-      response.status(400).send({errors})
-      return
-    }
-    const amount = request.body.amount
-    const sender = request.body.sender
-    const recipient = request.body.recipient
-    const [blockIndex, _] = await blockchain.createAndBroadcastTransaction(amount, sender, recipient)
-    response.send({blockIndex})
+  app.get("/block/:hash", (request, response) => {
+    const hash = request.params.hash
+    const block = blockchain.getBlock(hash)
+    response.send(block)
   })
 
   app.post("/mine", async (_, response) => {
@@ -66,21 +78,26 @@ export default app => {
     response.send(block)
   })
 
+  app.post("/consensus", async (_, response) => {
+    await blockchain.consensus()
+    response.sendStatus(200)
+  })
+
   app.get("/network", (_, response) => {
     response.send(network)
   })
 
-  app.post("/broadcast", checkSchema(nodesValidation), (request, response) => {
+  app.post("/network/broadcast", checkSchema(nodesValidation), async (request, response) => {
     const errors = request.validationErrors()
     if(errors) {
       response.status(400).send({errors})
       return
     }
-    network.registerAndBroadcastNodes(request.body.newNodes)
+    await network.registerAndBroadcastNodes(request.body.newNodes)
     response.sendStatus(200)
   })
 
-  app.post("/register", checkSchema(nodesValidation), (request, response) => {
+  app.post("/network/register", checkSchema(nodesValidation), (request, response) => {
     const errors = request.validationErrors()
     if(errors) {
       response.status(400).send({errors})
@@ -88,23 +105,6 @@ export default app => {
     }
     network.registerNodes(request.body.newNodes)
     response.sendStatus(200)
-  })
-
-  app.post("/consensus", async (_, response) => {
-    await blockchain.consensus()
-    response.sendStatus(200)
-  })
-
-  app.get("/block/:hash", (request, response) => {
-    const hash = request.params.hash
-    const block = blockchain.getBlock(hash)
-    response.send(block)
-  })
-
-  app.get("/transaction/:id", (request, response) => {
-    const id = request.params.id
-    const transaction = blockchain.getTransaction(id)
-    response.send(transaction)
   })
 
   app.get("/balance/:address", (request, response) => {
