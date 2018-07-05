@@ -126,19 +126,22 @@ export default (request) => {
 
   test("Request to /transaction/:id, succeed expected.", async t => {
     const response = await request.get("/transaction/NEW_TRANSACTION")
-    const transaction = response.body
+    const res = response.body
     t.is(response.status, 200)
-    t.is(transaction.transactionId, "NEW_TRANSACTION")
-    t.is(transaction.amount, 300)
-    t.is(transaction.sender, "SENDER_1")
-    t.is(transaction.recipient, "RECIPIENT_2")
+    t.is(res.transaction.transactionId, "NEW_TRANSACTION")
+    t.is(res.transaction.amount, 300)
+    t.is(res.transaction.sender, "SENDER_1")
+    t.is(res.transaction.recipient, "RECIPIENT_2")
   })
 
-  test("Request to /address/:address, succeed expected.", async t => {
-    const response = await request.get("/address/RECIPIENT_2")
-    const transactions = response.body
+  test("Request to /balance/:address, succeed expected.", async t => {
+    const response = await request.get("/balance/RECIPIENT_2")
+    const balance = response.body
     t.is(response.status, 200)
-    t.is(transactions.length, 2)
+    t.is(balance.transactions.length, 2)
+    t.is(balance.outcome, 0)
+    t.is(balance.income, 600)
+    t.is(balance.total, 600)
   })
 
   test("Request to /block/:id, null expected.", async t => {
@@ -153,9 +156,9 @@ export default (request) => {
     t.is(response.text.length, 0)
   })
 
-  test("Request to /address/:address, empty expected.", async t => {
-    const response = await request.get("/address/blablabla")
+  test("Request to /balance/:address, empty expected.", async t => {
+    const response = await request.get("/balance/blablabla")
     t.is(response.status, 200)
-    t.regex(response.text, /\[\]/)
+    t.is(response.text.length, 0)
   })
 }

@@ -147,19 +147,22 @@ export default class Blochain {
     let transactionFound = null
     this._chain.forEach(block => {
       block.transactions.forEach(transaction => {
-        if(transaction.transactionId == transactionId) transactionFound = transaction
+        if(transaction.transactionId == transactionId) transactionFound = {transaction, block}
       })
     })
     return transactionFound
   }
 
-  getTransactionsByAddress(address) {
-    const transactionsFound = []
+  getBalanceByAddress(address) {
+    const balance = {transactions:[], income: 0, outcome:0, total:0}
     this._chain.forEach(block => {
       block.transactions.forEach(transaction => {
-        if(transaction.recipient == address || transaction.sender == address) transactionsFound.push(transaction)
+        if(transaction.recipient == address || transaction.sender == address) balance.transactions.push(transaction)
+        if(transaction.recipient == address) balance.income += transaction.amount
+        if(transaction.sender == address) balance.outcome += transaction.amount
       })
     })
-    return transactionsFound
+    balance.total = balance.income - balance.outcome
+    return balance.transactions.length == 0 ? null : balance
   }
 }

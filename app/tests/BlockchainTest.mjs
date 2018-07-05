@@ -156,23 +156,26 @@ export default () => {
   })
 
   test("Getting a transaction by id, expecting a return.", t => {
-    const transaction = blockchain.getTransaction("NEW_TRANSACTION")
-    t.is(transaction.transactionId, "NEW_TRANSACTION")
-    t.is(transaction.amount, 100)
-    t.is(transaction.sender, "NEW_SENDER")
-    t.is(transaction.recipient, "NEW_RECIPIENT")
+    const res = blockchain.getTransaction("NEW_TRANSACTION")
+    t.is(res.transaction.transactionId, "NEW_TRANSACTION")
+    t.is(res.transaction.amount, 100)
+    t.is(res.transaction.sender, "NEW_SENDER")
+    t.is(res.transaction.recipient, "NEW_RECIPIENT")
   })
 
-  test("Getting a transactions by address, expecting a return.", t => {
-    const transactions = blockchain.getTransactionsByAddress("RECIPIENT_3")
-    t.is(transactions.length, 1)
-    t.is(transactions[0].amount, 100)
-    t.is(transactions[0].sender, "SENDER_2")
-    t.is(transactions[0].recipient, "RECIPIENT_3")
+  test("Getting a balance by address, expecting a return.", t => {
+    const balance = blockchain.getBalanceByAddress("RECIPIENT_3")
+    t.is(balance.transactions.length, 1)
+    t.is(balance.transactions[0].amount, 100)
+    t.is(balance.transactions[0].sender, "SENDER_2")
+    t.is(balance.transactions[0].recipient, "RECIPIENT_3")
+    t.is(balance.outcome, 0)
+    t.is(balance.income, 100)
+    t.is(balance.total, 100)
   })
 
-  test("Getting a transactions by address, expecting empty return.", t => {
-    const transactions = blockchain.getTransactionsByAddress("fjhfjhfjf")
-    t.is(transactions.length, 0)
+  test("Getting a balance by address, expecting empty return.", t => {
+    const balance = blockchain.getBalanceByAddress("blablabla")
+    t.is(balance, null)
   })
 }

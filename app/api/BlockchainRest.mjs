@@ -107,9 +107,9 @@ export default app => {
     response.send(transaction)
   })
 
-  app.get("/address/:address", (request, response) => {
+  app.get("/balance/:address", (request, response) => {
     const address = request.params.address
-    const transactions = blockchain.getTransactionsByAddress(address)
-    response.send(transactions)
+    const balance = blockchain.getBalanceByAddress(address)
+    response.send(balance)
   })
 }
