@@ -1,3 +1,5 @@
+import endpoints from "../api/endpoints"
+
 export default class Network {
   
   constructor(nodeUrl, requestService) {
@@ -17,7 +19,7 @@ export default class Network {
   async _checkIfUpAndAdd(newNode) {
     if(this._nodeUrl != newNode && !this._networkNodes.includes(newNode)) {
       try {
-        await this._requestService(`${newNode}/`)
+        await this._requestService(`${newNode}${endpoints.INDEX}`)
         this._networkNodes.push(newNode)
       } catch(e) {
         console.log(`Node ${newNode} out of order.`)
@@ -36,7 +38,7 @@ export default class Network {
   async _broadcastNodes(node) {
     try {
       const newNodes=[...this._networkNodes, this._nodeUrl]
-      await this._requestService(`${node}/network/register`,{method: "POST", body:{newNodes},json: true})
+      await this._requestService(`${node}${endpoints.POST_NETWORK_REGISTER}`,{method: "POST", body:{newNodes},json: true})
     } catch(e) {
       console.log(e)
     }
@@ -45,7 +47,7 @@ export default class Network {
   async broadcastTransaction(transaction) {
     try {
       const opt = {method: "POST", body: transaction, json: true}
-      const req = this._networkNodes.map(node => this._requestService(`${node}/transaction`, opt))
+      const req = this._networkNodes.map(node => this._requestService(`${node}${endpoints.POST_TRANSACTION}`, opt))
       await Promise.all(req)
     } catch(e) {
       console.log(e)
@@ -55,7 +57,7 @@ export default class Network {
   async broadcastBlock(block) {
     try {
       const opt = {method: "POST", body: block, json: true}
-      const req = this._networkNodes.map(node => this._requestService(`${node}/block`, opt))
+      const req = this._networkNodes.map(node => this._requestService(`${node}${endpoints.POST_BLOCK}`, opt))
       await Promise.all(req)
     } catch(e) {
       console.log(e)
@@ -64,7 +66,7 @@ export default class Network {
 
   async getChainsFromNodes() {
     try {
-      const promises = this._networkNodes.map(node => this._requestService(`${node}/blockchain`, {json: true}))
+      const promises = this._networkNodes.map(node => this._requestService(`${node}${endpoints.GET_BLOCKCHAIN}`, {json: true}))
       return await Promise.all(promises)
     } catch(e) {
       throw new Error(e)

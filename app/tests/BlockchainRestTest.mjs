@@ -1,13 +1,14 @@
 import test from "ava"
+import endpoints from "../api/endpoints"
 
 export default (request) => {
-  test("Request to /, status 200 expected.", async t => {
-    const response = await request.get("/")
+  test(`Request to ${endpoints.GET_INDEX}, status 200 expected.`, async t => {
+    const response = await request.get(endpoints.GET_INDEX)
     t.is(response.status, 200)
   })
 
-  test("Request to /blockchain, empty chain expected.", async t => {
-    const response = await request.get("/blockchain")
+  test(`Request to ${endpoints.GET_BLOCKCHAIN}, empty chain expected.`, async t => {
+    const response = await request.get(endpoints.GET_BLOCKCHAIN)
     t.is(response.status, 200)
     t.is(response.body._chain.length, 1)
     t.is(response.body._chain[0].index, 1)
@@ -18,9 +19,9 @@ export default (request) => {
     t.is(response.body._pendingTransactions.length, 0)
   })
 
-  test("Request to /block, expecting 400.", async t => {
+  test(`Request to ${endpoints.POST_BLOCK}, expecting 400.`, async t => {
     const block = {}
-    const response = await request.post("/block").send(block)
+    const response = await request.post(endpoints.POST_BLOCK).send(block)
     t.is(response.status, 400)
     t.regex(response.text, /index is a mandatory field/)
     t.regex(response.text, /transactions is a mandatory field/)
@@ -30,7 +31,7 @@ export default (request) => {
     t.regex(response.text, /previousBlockHash is a mandatory field/)
   })
 
-  test("Request to /block, expecting invalid block response as previousBlockHash and the index are invalid.", async t => {
+  test(`Request to ${endpoints.POST_BLOCK}, expecting invalid block response as previousBlockHash and the index are invalid.`, async t => {
     const block = {
       index: 49,
       transactions: [],
@@ -39,12 +40,12 @@ export default (request) => {
       hash: "TESTES",
       previousBlockHash: "0asdasd"
     }
-    const response = await request.post("/block").send(block)
+    const response = await request.post(endpoints.POST_BLOCK).send(block)
     t.is(response.status, 400)
     t.regex(response.text, /Invalid block/)
   })
 
-  test("Request to /block, expecting invalid block response as the hash is invalid.", async t => {
+  test(`Request to ${endpoints.POST_BLOCK}, expecting invalid block response as the hash is invalid.`, async t => {
     const block = {
       index: 2,
       transactions: [],
@@ -53,12 +54,12 @@ export default (request) => {
       hash: "TESTES",
       previousBlockHash: "0"
     }
-    const response = await request.post("/block").send(block)
+    const response = await request.post(endpoints.POST_BLOCK).send(block)
     t.is(response.status, 400)
     t.regex(response.text, /Invalid block/)
   })
 
-  test("Request to /block, succeed expected.", async t => {
+  test(`Request to ${endpoints.POST_BLOCK}, succeed expected.`, async t => {
     const block = {
       index: 2,
       transactions: [],
@@ -67,13 +68,13 @@ export default (request) => {
       nonce: 19481,
       hash: "00003858510f18b2c099bc084fd42a8b5c234f1b0c05ff91cb41179c2f7c90c7"
     }
-    const response = await request.post("/block").send(block)
+    const response = await request.post(endpoints.POST_BLOCK).send(block)
     t.is(response.status, 200)
   })
 
-  test("Request to /transaction, expecting 400.", async t => {
+  test(`Request to ${endpoints.POST_TRANSACTION}, expecting 400.`, async t => {
     const newTransaction = {transactionId: ""}
-    const response = await request.post("/transaction").send(newTransaction)
+    const response = await request.post(endpoints.POST_TRANSACTION).send(newTransaction)
     t.is(response.status, 400)
     t.regex(response.text, /amount is a mandatory field/)
     t.regex(response.text, /sender is a mandatory field/)
@@ -81,16 +82,16 @@ export default (request) => {
     t.regex(response.text, /transactionId is a mandatory field/)
   })
 
-  test("Request to /transaction, succeed expected.", async t => {
+  test(`Request to ${endpoints.POST_TRANSACTION}, succeed expected.`, async t => {
     const newTransaction = {transactionId: "NEW_TRANSACTION", amount: 300, sender: "SENDER_1", recipient: "RECIPIENT_2"}
-    const response = await request.post("/transaction").send(newTransaction)
+    const response = await request.post(endpoints.POST_TRANSACTION).send(newTransaction)
     t.is(response.status, 200)
     t.is(response.body.blockIndex, 3)
   })
 
-  test("Request to /transaction/broadcast, expecting 400.", async t => {
+  test(`Request to ${endpoints.POST_TRANSACTION_BROADCAST}, expecting 400.`, async t => {
     const newTransaction = {transactionId: ""}
-    const response = await request.post("/transaction/broadcast").send(newTransaction)
+    const response = await request.post(endpoints.POST_TRANSACTION_BROADCAST).send(newTransaction)
     t.is(response.status, 400)
     t.regex(response.text, /amount is a mandatory field/)
     t.regex(response.text, /sender is a mandatory field/)
@@ -98,15 +99,15 @@ export default (request) => {
     t.regex(response.text, /transactionId is a mandatory field/)
   })
 
-  test("Request to /transaction/broadcast, succeed expected.", async t => {
+  test(`Request to ${endpoints.POST_TRANSACTION_BROADCAST}, succeed expected.`, async t => {
     const newTransaction = {amount: 300, sender: "SENDER_1", recipient: "RECIPIENT_2"}
-    const response = await request.post("/transaction/broadcast").send(newTransaction)
+    const response = await request.post(endpoints.POST_TRANSACTION_BROADCAST).send(newTransaction)
     t.is(response.status, 200)
     t.is(response.body.blockIndex, 3)
   })
 
-  test("Request to /mine, succeed expected.", async t => {
-    const response = await request.post("/mine")
+  test(`Request to ${endpoints.POST_MINE}, succeed expected.`, async t => {
+    const response = await request.post(endpoints.POST_MINE)
     t.is(response.status, 200)
 
     const block = response.body
@@ -123,13 +124,14 @@ export default (request) => {
     t.is(block.transactions[1].recipient, "RECIPIENT_2")
   })
 
-  test("Request to /consensus, succeed expected.", async t => {
-    const response = await request.post("/consensus")
+  test(`Request to ${endpoints.POST_CONSENSUS}, succeed expected.`, async t => {
+    const response = await request.post(endpoints.POST_CONSENSUS)
     t.is(response.status, 200)
   })
 
-  test("Request to /block/:id, succeed expected.", async t => {
-    const response = await request.get("/block/00003858510f18b2c099bc084fd42a8b5c234f1b0c05ff91cb41179c2f7c90c7")
+  test(`Request to ${endpoints.GET_BLOCK}, succeed expected.`, async t => {
+    const url = endpoints.GET_BLOCK.substring(0, endpoints.GET_BLOCK.indexOf(":")) + "00003858510f18b2c099bc084fd42a8b5c234f1b0c05ff91cb41179c2f7c90c7"
+    const response = await request.get(url)
     const block = response.body
     t.is(block.index, 2)
     t.is(block.transactions.length, 0)
@@ -138,8 +140,9 @@ export default (request) => {
     t.is(block.previousBlockHash, "0")
   })
 
-  test("Request to /transaction/:id, succeed expected.", async t => {
-    const response = await request.get("/transaction/NEW_TRANSACTION")
+  test(`Request to ${endpoints.GET_TRANSACTION}, succeed expected.`, async t => {
+    const url = endpoints.GET_TRANSACTION.substring(0, endpoints.GET_TRANSACTION.indexOf(":")) + "NEW_TRANSACTION"
+    const response = await request.get(url)
     const res = response.body
     t.is(response.status, 200)
     t.is(res.transaction.transactionId, "NEW_TRANSACTION")
@@ -148,8 +151,9 @@ export default (request) => {
     t.is(res.transaction.recipient, "RECIPIENT_2")
   })
 
-  test("Request to /balance/:address, succeed expected.", async t => {
-    const response = await request.get("/balance/RECIPIENT_2")
+  test(`Request to ${endpoints.GET_BALANCE}, succeed expected.`, async t => {
+    const url = endpoints.GET_BALANCE.substring(0, endpoints.GET_BALANCE.indexOf(":")) + "RECIPIENT_2"
+    const response = await request.get(url)
     const balance = response.body
     t.is(response.status, 200)
     t.is(balance.transactions.length, 2)
@@ -158,20 +162,23 @@ export default (request) => {
     t.is(balance.total, 600)
   })
 
-  test("Request to /block/:id, null expected.", async t => {
-    const response = await request.get("/block/blablabla")
+  test(`Request to ${endpoints.GET_BLOCK}, null expected.`, async t => {
+    const url = endpoints.GET_BLOCK.substring(0, endpoints.GET_BLOCK.indexOf(":")) + "blablabla"
+    const response = await request.get(url)
     t.is(response.status, 200)
     t.is(response.text.length, 0)
   })
 
-  test("Request to /transaction/:id, null expected.", async t => {
-    const response = await request.get("/transaction/blablabla")
+  test(`Request to ${endpoints.GET_TRANSACTION}, null expected.`, async t => {
+    const url = endpoints.GET_TRANSACTION.substring(0, endpoints.GET_TRANSACTION.indexOf(":")) + "blablabla"
+    const response = await request.get(url)
     t.is(response.status, 200)
     t.is(response.text.length, 0)
   })
 
-  test("Request to /balance/:address, empty expected.", async t => {
-    const response = await request.get("/balance/blablabla")
+  test(`Request to ${endpoints.GET_BALANCE}, empty expected.`, async t => {
+    const url = endpoints.GET_BALANCE.substring(0, endpoints.GET_BALANCE.indexOf(":")) + "blablabla"
+    const response = await request.get(url)
     t.is(response.status, 200)
     t.is(response.text.length, 0)
   })

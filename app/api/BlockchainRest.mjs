@@ -6,20 +6,21 @@ const {checkSchema} = checkApi
 import transactionValidation from "../validation/transaction"
 import nodesValidation from "../validation/nodes"
 import blockValidation from "../validation/block"
+import endpoints from "./endpoints"
 
 export default app => {
   const network = new Network(app.profile.nodeUrl, request)
   const blockchain = new Blockchain(app.profile.nodeId, network)
   
-  app.get("/", (_, response) => {
+  app.get(endpoints.GET_INDEX, (_, response) => {
     response.sendStatus(200)
   })
 
-  app.get("/blockchain", (_, response) => {
+  app.get(endpoints.GET_BLOCKCHAIN, (_, response) => {
     response.send(blockchain)
   })
 
-  app.post("/transaction", checkSchema(transactionValidation), (request, response) => {
+  app.post(endpoints.POST_TRANSACTION, checkSchema(transactionValidation), (request, response) => {
     const errors = request.validationErrors()
     if(errors) {
       response.status(400).send({errors})
@@ -33,7 +34,7 @@ export default app => {
     response.send({blockIndex})
   })
 
-  app.post("/transaction/broadcast", checkSchema(transactionValidation), async (request, response) => {
+  app.post(endpoints.POST_TRANSACTION_BROADCAST, checkSchema(transactionValidation), async (request, response) => {
     const errors = request.validationErrors()
     if(errors) {
       response.status(400).send({errors})
@@ -46,13 +47,13 @@ export default app => {
     response.send({blockIndex})
   })
 
-  app.get("/transaction/:id", (request, response) => {
+  app.get(endpoints.GET_TRANSACTION, (request, response) => {
     const id = request.params.id
     const transaction = blockchain.getTransaction(id)
     response.send(transaction)
   })
 
-  app.post("/block", checkSchema(blockValidation), (request, response) => {
+  app.post(endpoints.POST_BLOCK, checkSchema(blockValidation), (request, response) => {
     const errors = request.validationErrors()
     if(errors) {
       response.status(400).send({errors})
@@ -67,27 +68,27 @@ export default app => {
     }
   })
 
-  app.get("/block/:hash", (request, response) => {
+  app.get(endpoints.GET_BLOCK, (request, response) => {
     const hash = request.params.hash
     const block = blockchain.getBlock(hash)
     response.send(block)
   })
 
-  app.post("/mine", async (_, response) => {
+  app.post(endpoints.POST_MINE, async (_, response) => {
     const block = await blockchain.mine()
     response.send(block)
   })
 
-  app.post("/consensus", async (_, response) => {
+  app.post(endpoints.POST_CONSENSUS, async (_, response) => {
     await blockchain.consensus()
     response.sendStatus(200)
   })
 
-  app.get("/network", (_, response) => {
+  app.get(endpoints.GET_NETWORK, (_, response) => {
     response.send(network)
   })
 
-  app.post("/network/broadcast", checkSchema(nodesValidation), async (request, response) => {
+  app.post(endpoints.POST_NETWORK_BROADCAST, checkSchema(nodesValidation), async (request, response) => {
     const errors = request.validationErrors()
     if(errors) {
       response.status(400).send({errors})
@@ -97,7 +98,7 @@ export default app => {
     response.sendStatus(200)
   })
 
-  app.post("/network/register", checkSchema(nodesValidation), (request, response) => {
+  app.post(endpoints.POST_NETWORK_REGISTER, checkSchema(nodesValidation), (request, response) => {
     const errors = request.validationErrors()
     if(errors) {
       response.status(400).send({errors})
@@ -107,7 +108,7 @@ export default app => {
     response.sendStatus(200)
   })
 
-  app.get("/balance/:address", (request, response) => {
+  app.get(endpoints.GET_BALANCE, (request, response) => {
     const address = request.params.address
     const balance = blockchain.getBalanceByAddress(address)
     response.send(balance)
