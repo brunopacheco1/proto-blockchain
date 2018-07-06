@@ -38,6 +38,13 @@ paths:
       operationId: postTransaction
       tags:
         - blockchain
+      requestBody:
+        description: Transaction to add to the pending transactions
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Transaction"
       responses:
         '200':
           description: The block index of the transaction
@@ -57,6 +64,13 @@ paths:
       operationId: postTransactionBroadcast
       tags:
         - blockchain
+      requestBody:
+        description: Transaction to add to the pending transactions and broadcast
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Transaction"
       responses:
         '200':
           description: The block index of the transaction
@@ -98,15 +112,28 @@ paths:
       operationId: postBlock
       tags:
         - blockchain
+      requestBody:
+        description: Block to add to the chain
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Block"
       responses:
         '200':
           description: Returns OK
         '400':
-          description:  Invalid block
+          description:  Block is not respecting the schema
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/SchemaErrors"
+        '409':
+          description:  Invalid block
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConflictError"
   /bloch/{hash}:
     get:
       summary: Info for a specific block
@@ -192,9 +219,16 @@ paths:
       operationId: postNetworkBroadcast
       tags:
         - network
+      requestBody:
+        description: Nodes to add and broadcast
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Nodes"
       responses:
         '200':
-          description: Returns OK
+          description: OK
         '400':
           description:  Invalid list of nodes
           content:
@@ -207,9 +241,16 @@ paths:
       operationId: postNetworkRegister
       tags:
         - network
+      requestBody:
+        description: Nodes to add and broadcast
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Nodes"
       responses:
         '200':
-          description: Returns OK
+          description: OK
         '400':
           description:  Invalid list of nodes
           content:
@@ -225,6 +266,7 @@ components:
       properties:
         _nodeId:
           type: string
+          example: "0dccb2f0811711e88a353b6aeb8b303a"
         _chain:
           type: array
           items:
@@ -246,6 +288,7 @@ components:
         index:
           type: integer
           format: int32
+          example: 2
         transactions:
           type: array
           items:
@@ -253,38 +296,50 @@ components:
         timestamp:
           type: integer
           format: int64
+          example: 1530881811544
         previousBlockHash:
           type: string
+          example: "0"
         nonce:
           type: integer
           format: int32
+          example: 911
         hash:
           type: string
+          example: "0000078eb33ecd5681ae53b5b6758b806be654c4c530bb056a26d93099b9b3e9"
     Transaction:
       required:
         - amount
         - sender
         - recipient
-        - transactionId
       properties:
         amount:
           type: number
+          example: 30.5
         sender:
           type: string
+          example: "SENDER_1"
         recipient:
           type: string
+          example: "RECIPIENT_2"
         transactionId:
           type: string
+          example: "TRANSACTION_ID"
     Network:
       required:
         - _nodeUrl
       properties:
         _nodeUrl:
           type: string
+          example: "https://proto-blockchain.herokuapp.com"
         _networkNodes:
           type: array
           items:
             type: string
+          example:
+            - "https://proto-blockchain-1.herokuapp.com"
+            - "https://proto-blockchain-2.herokuapp.com"
+            - "https://proto-blockchain-3.herokuapp.com"
     BlockIndex:
       required:
         - blockIndex
@@ -292,6 +347,7 @@ components:
         blockIndex:
           type: integer
           format: int32
+          example: 2
     Balance:
       required:
         - transactions
@@ -305,10 +361,25 @@ components:
             $ref: "#/components/schemas/Transaction"
         income:
           type: number
+          example: 30.5
         outcome:
           type: number
+          example: 0
         total:
           type: number
+          example: 30.5
+    Nodes:
+      required:
+        - newNodes
+      properties:
+        newNodes:
+          type: array
+          items:
+            type: string
+          example:
+            - "https://proto-blockchain-1.herokuapp.com"
+            - "https://proto-blockchain-2.herokuapp.com"
+            - "https://proto-blockchain-3.herokuapp.com"
     SchemaErrors:
       required:
         - errors
@@ -325,7 +396,20 @@ components:
       properties:
         location:
           type: string
+          example: "body"
         param:
           type: string
+          example: "recipient"
         msg:
           type: string
+          example: "recipient is a mandatory field"
+    ConflictError:
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+          example:
+            - "Invalid block"

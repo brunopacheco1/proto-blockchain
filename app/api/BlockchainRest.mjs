@@ -65,7 +65,7 @@ export default app => {
       blockchain.receiveBlock(block)
       response.sendStatus(200)
     } catch(e) {
-      response.status(400).send({errors :[e.message]})
+      response.status(409).send({errors :[e.message]})
     }
   })
 

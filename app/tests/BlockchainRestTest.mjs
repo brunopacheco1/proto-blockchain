@@ -41,7 +41,7 @@ export default (request) => {
       previousBlockHash: "0asdasd"
     }
     const response = await request.post(endpoints.POST_BLOCK).send(block)
-    t.is(response.status, 400)
+    t.is(response.status, 409)
     t.regex(response.text, /Invalid block/)
   })
 
@@ -55,7 +55,7 @@ export default (request) => {
       previousBlockHash: "0"
     }
     const response = await request.post(endpoints.POST_BLOCK).send(block)
-    t.is(response.status, 400)
+    t.is(response.status, 409)
     t.regex(response.text, /Invalid block/)
   })
 
