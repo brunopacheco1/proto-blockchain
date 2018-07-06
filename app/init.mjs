@@ -2,8 +2,9 @@ import express from "express"
 import bodyParser from "body-parser"
 import validator from "express-validator"
 import cors from "cors"
-import blockchainRest from "./api/BlockchainRest"
 import uuid from "uuid/v1"
+import blockchainRest from "./api/BlockchainRest"
+import swagger from "./api/swagger"
 
 const NODE_PORT = process.env.PORT || 4000
 const NODE_URL = process.env.NODE_URL || "http://localhost:4000"
@@ -31,6 +32,7 @@ export default () => {
   app.use(cors(corsOption))
 
   blockchainRest(app)
+  swagger(app)
   
   return app
 }

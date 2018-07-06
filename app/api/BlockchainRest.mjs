@@ -50,7 +50,8 @@ export default app => {
   app.get(endpoints.GET_TRANSACTION, (request, response) => {
     const id = request.params.id
     const transaction = blockchain.getTransaction(id)
-    response.send(transaction)
+    if(transaction) response.send(transaction);
+    else response.sendStatus(404)
   })
 
   app.post(endpoints.POST_BLOCK, checkSchema(blockValidation), (request, response) => {
@@ -71,7 +72,9 @@ export default app => {
   app.get(endpoints.GET_BLOCK, (request, response) => {
     const hash = request.params.hash
     const block = blockchain.getBlock(hash)
-    response.send(block)
+    
+    if(block) response.send(block);
+    else response.sendStatus(404)
   })
 
   app.post(endpoints.POST_MINE, async (_, response) => {
@@ -111,6 +114,8 @@ export default app => {
   app.get(endpoints.GET_BALANCE, (request, response) => {
     const address = request.params.address
     const balance = blockchain.getBalanceByAddress(address)
-    response.send(balance)
+
+    if(balance) response.send(balance);
+    else response.sendStatus(404)
   })
 }

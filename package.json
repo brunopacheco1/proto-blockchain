@@ -43,6 +43,8 @@
     "express-validator": "^5.2.0",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5",
-    "uuid": "^3.3.2"
+    "swagger-ui-express": "^3.0.10",
+    "uuid": "^3.3.2",
+    "yamljs": "^0.3.0"
   }
 }

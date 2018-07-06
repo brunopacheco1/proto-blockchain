@@ -11,5 +11,6 @@ export default {
   GET_NETWORK: "/network",
   POST_NETWORK_BROADCAST: "/network/broadcast",
   POST_NETWORK_REGISTER: "/network/register",
-  GET_BALANCE: "/balance/:address"
+  GET_BALANCE: "/balance/:address",
+  GET_SWAGGER: "/api-docs"
 }

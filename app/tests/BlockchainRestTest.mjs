@@ -162,24 +162,21 @@ export default (request) => {
     t.is(balance.total, 600)
   })
 
-  test(`Request to ${endpoints.GET_BLOCK}, null expected.`, async t => {
+  test(`Request to ${endpoints.GET_BLOCK}, 404 expected.`, async t => {
     const url = endpoints.GET_BLOCK.substring(0, endpoints.GET_BLOCK.indexOf(":")) + "blablabla"
     const response = await request.get(url)
-    t.is(response.status, 200)
-    t.is(response.text.length, 0)
+    t.is(response.status, 404)
   })
 
-  test(`Request to ${endpoints.GET_TRANSACTION}, null expected.`, async t => {
+  test(`Request to ${endpoints.GET_TRANSACTION}, 404 expected.`, async t => {
     const url = endpoints.GET_TRANSACTION.substring(0, endpoints.GET_TRANSACTION.indexOf(":")) + "blablabla"
     const response = await request.get(url)
-    t.is(response.status, 200)
-    t.is(response.text.length, 0)
+    t.is(response.status, 404)
   })
 
-  test(`Request to ${endpoints.GET_BALANCE}, empty expected.`, async t => {
+  test(`Request to ${endpoints.GET_BALANCE}, 404 expected.`, async t => {
     const url = endpoints.GET_BALANCE.substring(0, endpoints.GET_BALANCE.indexOf(":")) + "blablabla"
     const response = await request.get(url)
-    t.is(response.status, 200)
-    t.is(response.text.length, 0)
+    t.is(response.status, 404)
   })
 }

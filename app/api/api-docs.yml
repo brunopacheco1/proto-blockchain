@@ -1,0 +1,331 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: PROTO-BLOCKCHAIN
+  license:
+    name: ISC
+servers:
+  - url: https://proto-blockchain.herokuapp.com
+  - url: https://proto-blockchain-1.herokuapp.com
+  - url: https://proto-blockchain-2.herokuapp.com
+  - url: https://proto-blockchain-3.herokuapp.com
+paths:
+  /:
+    get:
+      summary: Returns the index of the node, to check if it's up and running
+      operationId: getIndex
+      tags:
+        - blockchain
+      responses:
+        '200':
+          description: Returns OK
+  /blockchain:
+    get:
+      summary: Returns the node's blockchain
+      operationId: getBlockchain
+      tags:
+        - blockchain
+      responses:
+        '200':
+          description: A blockchain
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Blockchain"
+  /transaction:
+    post:
+      summary: Receives a new transaction
+      operationId: postTransaction
+      tags:
+        - blockchain
+      responses:
+        '200':
+          description: The block index of the transaction
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/BlockIndex"
+        '400':
+          description:  Invalid transaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchemaErrors"
+  /transaction/broadcast:
+    post:
+      summary: Receives a new transaction and broadcasts it for the network nodes
+      operationId: postTransactionBroadcast
+      tags:
+        - blockchain
+      responses:
+        '200':
+          description: The block index of the transaction
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/BlockIndex"
+        '400':
+          description:  Invalid transaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchemaErrors"
+  /transaction/{transactionId}:
+    get:
+      summary: Info for a specific transaction
+      operationId: getTransaction
+      tags:
+        - blockchain
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          description: The id of the transaction to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+        '404':
+          description: Transaction not found
+  /block:
+    post:
+      summary: Receives a new block
+      operationId: postBlock
+      tags:
+        - blockchain
+      responses:
+        '200':
+          description: Returns OK
+        '400':
+          description:  Invalid block
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchemaErrors"
+  /bloch/{hash}:
+    get:
+      summary: Info for a specific block
+      operationId: getBlock
+      tags:
+        - blockchain
+      parameters:
+        - name: hash
+          in: path
+          required: true
+          description: The hash of the block to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Block"
+        '404':
+          description: Block not found
+  /mine:
+    post:
+      summary: Starts a mining process
+      operationId: postMine
+      tags:
+        - blockchain
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Block"
+  /consensus:
+    post:
+      summary: Runs the consensus algorithm in the node, to synchronize it within the network
+      operationId: postConsensus
+      tags:
+        - blockchain
+      responses:
+        '200':
+          description: Returns OK
+  /balance/{address}:
+    post:
+      summary: Returns the address's balance
+      operationId: getBalance
+      tags:
+        - blockchain
+      parameters:
+        - name: address
+          in: path
+          required: true
+          description: The address to look for a balance
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Balance"
+        '404':
+          description: Balance not found
+  /network:
+    get:
+      summary: Returns the node's network
+      operationId: getNetwork
+      tags:
+        - network
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Network"
+  /network/broadcast:
+    post:
+      summary: Registers new nodes and broadcast them
+      operationId: postNetworkBroadcast
+      tags:
+        - network
+      responses:
+        '200':
+          description: Returns OK
+        '400':
+          description:  Invalid list of nodes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchemaErrors"
+  /network/register:
+    post:
+      summary: Registers new nodes
+      operationId: postNetworkRegister
+      tags:
+        - network
+      responses:
+        '200':
+          description: Returns OK
+        '400':
+          description:  Invalid list of nodes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchemaErrors"
+components:
+  schemas:
+    Blockchain:
+      required:
+        - _nodeId
+        - _network
+      properties:
+        _nodeId:
+          type: string
+        _chain:
+          type: array
+          items:
+            $ref: "#/components/schemas/Block"
+        _pendingTransactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Transaction"
+        _network:
+          $ref: "#/components/schemas/Network"
+    Block:
+      required:
+        - index
+        - timestamp
+        - previousBlockHash
+        - nonce
+        - hash
+      properties:
+        index:
+          type: integer
+          format: int32
+        transactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Transaction"
+        timestamp:
+          type: integer
+          format: int64
+        previousBlockHash:
+          type: string
+        nonce:
+          type: integer
+          format: int32
+        hash:
+          type: string
+    Transaction:
+      required:
+        - amount
+        - sender
+        - recipient
+        - transactionId
+      properties:
+        amount:
+          type: number
+        sender:
+          type: string
+        recipient:
+          type: string
+        transactionId:
+          type: string
+    Network:
+      required:
+        - _nodeUrl
+      properties:
+        _nodeUrl:
+          type: string
+        _networkNodes:
+          type: array
+          items:
+            type: string
+    BlockIndex:
+      required:
+        - blockIndex
+      properties:
+        blockIndex:
+          type: integer
+          format: int32
+    Balance:
+      required:
+        - transactions
+        - income
+        - outcome
+        - total
+      properties:
+        transactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Transaction"
+        income:
+          type: number
+        outcome:
+          type: number
+        total:
+          type: number
+    SchemaErrors:
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/SchemaError"
+    SchemaError:
+      required:
+        - location
+        - param
+        - msg
+      properties:
+        location:
+          type: string
+        param:
+          type: string
+        msg:
+          type: string
