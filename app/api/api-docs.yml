@@ -133,7 +133,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ConflictError"
-  /bloch/{hash}:
+  /block/{hash}:
     get:
       summary: Info for a specific block
       operationId: getBlock
