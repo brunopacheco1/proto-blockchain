@@ -5,4 +5,13 @@ script:
   - npm test
 deploy:
   provider: heroku
-  api_key: $HEROKU_API_KEY
+  api_key:
+    node_0: $HEROKU_API_KEY
+    node_1: $HEROKU_API_KEY
+    node_2: $HEROKU_API_KEY
+    node_3: $HEROKU_API_KEY
+  app:
+    node_0: proto-blockchain
+    node_1: proto-blockchain-1
+    node_2: proto-blockchain-2
+    node_3: proto-blockchain-3
