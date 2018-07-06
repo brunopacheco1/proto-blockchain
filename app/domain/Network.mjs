@@ -19,7 +19,7 @@ export default class Network {
   async _checkIfUpAndAdd(newNode) {
     if(this._nodeUrl != newNode && !this._networkNodes.includes(newNode)) {
       try {
-        await this._requestService(`${newNode}${endpoints.INDEX}`)
+        await this._requestService(`${newNode}${endpoints.GET_INDEX}`)
         this._networkNodes.push(newNode)
       } catch(e) {
         console.log(`Node ${newNode} out of order.`)
