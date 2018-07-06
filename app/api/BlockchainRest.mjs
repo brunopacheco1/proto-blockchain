@@ -20,7 +20,7 @@ export default app => {
     response.send(blockchain)
   })
 
-  app.post(endpoints.POST_TRANSACTION, checkSchema(transactionValidation), (request, response) => {
+  app.put(endpoints.PUT_TRANSACTION, checkSchema(transactionValidation), (request, response) => {
     const errors = request.validationErrors()
     if(errors) {
       response.status(400).send({errors})
@@ -34,7 +34,7 @@ export default app => {
     response.send({blockIndex})
   })
 
-  app.post(endpoints.POST_TRANSACTION_BROADCAST, checkSchema(transactionValidation), async (request, response) => {
+  app.post(endpoints.POST_TRANSACTION, checkSchema(transactionValidation), async (request, response) => {
     const errors = request.validationErrors()
     if(errors) {
       response.status(400).send({errors})
@@ -54,7 +54,7 @@ export default app => {
     else response.sendStatus(404)
   })
 
-  app.post(endpoints.POST_BLOCK, checkSchema(blockValidation), (request, response) => {
+  app.put(endpoints.PUT_BLOCK, checkSchema(blockValidation), (request, response) => {
     const errors = request.validationErrors()
     if(errors) {
       response.status(400).send({errors})
@@ -91,7 +91,7 @@ export default app => {
     response.send(network)
   })
 
-  app.post(endpoints.POST_NETWORK_BROADCAST, checkSchema(nodesValidation), async (request, response) => {
+  app.post(endpoints.POST_NODES, checkSchema(nodesValidation), async (request, response) => {
     const errors = request.validationErrors()
     if(errors) {
       response.status(400).send({errors})
@@ -101,7 +101,7 @@ export default app => {
     response.sendStatus(200)
   })
 
-  app.post(endpoints.POST_NETWORK_REGISTER, checkSchema(nodesValidation), (request, response) => {
+  app.put(endpoints.PUT_NODES, checkSchema(nodesValidation), (request, response) => {
     const errors = request.validationErrors()
     if(errors) {
       response.status(400).send({errors})

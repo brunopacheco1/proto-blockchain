@@ -38,7 +38,7 @@ export default class Network {
   async _broadcastNodes(node) {
     try {
       const newNodes=[...this._networkNodes, this._nodeUrl]
-      await this._requestService(`${node}${endpoints.POST_NETWORK_REGISTER}`,{method: "POST", body:{newNodes},json: true})
+      await this._requestService(`${node}${endpoints.PUT_NODES}`,{method: "PUT", body:{newNodes},json: true})
     } catch(e) {
       console.log(e)
     }
@@ -46,8 +46,8 @@ export default class Network {
 
   async broadcastTransaction(transaction) {
     try {
-      const opt = {method: "POST", body: transaction, json: true}
-      const req = this._networkNodes.map(node => this._requestService(`${node}${endpoints.POST_TRANSACTION}`, opt))
+      const opt = {method: "PUT", body: transaction, json: true}
+      const req = this._networkNodes.map(node => this._requestService(`${node}${endpoints.PUT_TRANSACTION}`, opt))
       await Promise.all(req)
     } catch(e) {
       console.log(e)
@@ -56,8 +56,8 @@ export default class Network {
 
   async broadcastBlock(block) {
     try {
-      const opt = {method: "POST", body: block, json: true}
-      const req = this._networkNodes.map(node => this._requestService(`${node}${endpoints.POST_BLOCK}`, opt))
+      const opt = {method: "PUT", body: block, json: true}
+      const req = this._networkNodes.map(node => this._requestService(`${node}${endpoints.PUT_BLOCK}`, opt))
       await Promise.all(req)
     } catch(e) {
       console.log(e)
