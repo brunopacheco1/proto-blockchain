@@ -36,7 +36,7 @@ export default class Network {
   async _broadcastNodes(node) {
     try {
       const newNodes=[...this._networkNodes, this._nodeUrl]
-      await this._requestService(`${node}/register`,{method: "POST", body:{newNodes},json: true})
+      await this._requestService(`${node}/network/register`,{method: "POST", body:{newNodes},json: true})
     } catch(e) {
       console.log(e)
     }
