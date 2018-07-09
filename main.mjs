@@ -8,4 +8,5 @@ app.listen(profile.port, () => {
   console.log(`Environment: ${profile.name}`)
   console.log(`Port: ${profile.port}`)
   console.log(`URL: ${profile.nodeUrl}`)
+  console.log(`RabbitMQ: ${profile.rabbitmqServer}`)
 })

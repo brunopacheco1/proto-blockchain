@@ -1,5 +1,6 @@
 import Blockchain from "../domain/Blockchain"
 import Network from "../domain/Network"
+import QueueManager from "../domain/QueueManager"
 import request from "request-promise-native"
 import checkApi from "express-validator/check"
 const {checkSchema} = checkApi
@@ -11,7 +12,8 @@ import endpoints from "./endpoints"
 export default app => {
   const network = new Network(app.profile.nodeUrl, app.profile.nodeMaster, request)
   const blockchain = new Blockchain(app.profile.nodeId, network)
-  blockchain.connectToNetwork()
+  const queueManager = new QueueManager(blockchain)
+  queueManager.initializeQueues(app.profile.rabbitmqServer)
   
   app.get(endpoints.GET_INDEX, (_, response) => {
     response.sendStatus(200)

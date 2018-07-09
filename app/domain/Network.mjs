@@ -86,4 +86,8 @@ export default class Network {
     }
     return false
   }
+
+  getNodeUrl() {
+    return this._nodeUrl
+  }
 }

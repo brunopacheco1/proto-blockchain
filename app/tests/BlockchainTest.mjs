@@ -172,10 +172,4 @@ export default () => {
     const balance = blockchain.getBalanceByAddress("blablabla")
     t.is(balance, null)
   })
-
-  test("Connecting node and running consensus, expecting no changes.", async t => {
-    await blockchain.connectToNetwork()
-    const block = blockchain.getLastBlock()
-    t.is(block.index, 6)
-  })
 }

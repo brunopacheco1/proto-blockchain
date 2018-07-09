@@ -23,9 +23,4 @@ export default () => {
     await network.registerAndBroadcastNodes(["NODE_URL_2"])
     t.is(network.getNetworkNodes().length, 2)
   })
-
-  test("Connecting the node to the network, expecting no changes.", async t => {
-    await network.connectToNetwork()
-    t.is(network.getNetworkNodes().length, 2)
-  })
 }

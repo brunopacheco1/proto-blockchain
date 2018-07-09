@@ -1,5 +1,6 @@
 import crypto from "crypto"
 import uuid from "uuid/v1"
+import QueueManager from "./QueueManager"
 
 export default class Blochain {
   
@@ -123,11 +124,6 @@ export default class Blochain {
     return gb.nonce == 100 && gb.previousBlockHash == "0" && gb.hash == "0" && gb.transactions.length == 0
   }
 
-  async connectToNetwork() {
-    const connected = await this._network.connectToNetwork()
-    if(connected) await new Promise(done => setTimeout(done, 5000)).then(async() => await this.consensus())
-  }
-
   async consensus() {
     const blockchains = await this._network.getChainsFromNodes()
     let longestBlockchain = null
@@ -138,6 +134,16 @@ export default class Blochain {
     if(longestBlockchain && this.chainIsValid(longestBlockchain._chain)) {
       this._chain = longestBlockchain._chain
       this._pendingTransactions = longestBlockchain._pendingTransactions
+    }
+  }
+
+  async consensusByNode(blockchain) {
+    await this._network.registerNodes([blockchain._network._nodeUrl])
+    if(blockchain._network._nodeUrl != this._network._nodeUrl) {
+      if(blockchain._chain.length > this._chain.length && this.chainIsValid(blockchain._chain)) {
+        this._chain = blockchain._chain
+        this._pendingTransactions = blockchain._pendingTransactions
+      }
     }
   }
 
