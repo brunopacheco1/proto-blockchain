@@ -125,11 +125,13 @@ export default class Blochain {
 
   async connectToNetwork() {
     const connected = await this._network.connectToNetwork()
-    if(connected) setTimeout(async () => await this.consensus(), 5000)
+    if(connected) await new Promise(done => setTimeout(done, 5000)).then(async() => await this.consensus())
   }
 
   async consensus() {
+    console.log("Running consensus")
     const blockchains = await this._network.getChainsFromNodes()
+    console.log(blockchains)
     let longestBlockchain = null
     let longestLength = this._chain.length
     blockchains.forEach(blockchain => {

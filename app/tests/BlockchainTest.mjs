@@ -2,7 +2,7 @@ import Blockchain from "../domain/Blockchain"
 import test from "ava"
 
 export default () => {
-  const blockchain = new Blockchain("DUMMIE_ID", {broadcastTransaction: () => {}, broadcastBlock: () => {}})
+  const blockchain = new Blockchain("DUMMIE_ID", {connectToNetwork:() => new Promise(done => done(true)), broadcastTransaction: () => {}, broadcastBlock: () => {}, getChainsFromNodes: () => []})
 
   test("Creating a new block without transactions, expecting 2 blocks and the last has no transaction.", t => {
     blockchain.createBlock()
@@ -171,5 +171,11 @@ export default () => {
   test("Getting a balance by address, expecting empty return.", t => {
     const balance = blockchain.getBalanceByAddress("blablabla")
     t.is(balance, null)
+  })
+
+  test("Connecting node and running consensus, expecting no changes.", async t => {
+    await blockchain.connectToNetwork()
+    const block = blockchain.getLastBlock()
+    t.is(block.index, 6)
   })
 }
