@@ -129,9 +129,7 @@ export default class Blochain {
   }
 
   async consensus() {
-    console.log("Running consensus")
     const blockchains = await this._network.getChainsFromNodes()
-    console.log(blockchains)
     let longestBlockchain = null
     let longestLength = this._chain.length
     blockchains.forEach(blockchain => {
