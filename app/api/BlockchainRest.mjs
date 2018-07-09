@@ -9,8 +9,9 @@ import blockValidation from "../validation/block"
 import endpoints from "./endpoints"
 
 export default app => {
-  const network = new Network(app.profile.nodeUrl, request)
+  const network = new Network(app.profile.nodeUrl, app.profile.nodeMaster, request)
   const blockchain = new Blockchain(app.profile.nodeId, network)
+  blockchain.connectToNetwork()
   
   app.get(endpoints.GET_INDEX, (_, response) => {
     response.sendStatus(200)

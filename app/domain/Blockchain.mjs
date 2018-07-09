@@ -123,6 +123,11 @@ export default class Blochain {
     return gb.nonce == 100 && gb.previousBlockHash == "0" && gb.hash == "0" && gb.transactions.length == 0
   }
 
+  async connectToNetwork() {
+    const connected = await this._network.connectToNetwork()
+    if(connected) setTimeout(async () => await this.consensus(), 5000)
+  }
+
   async consensus() {
     const blockchains = await this._network.getChainsFromNodes()
     let longestBlockchain = null
