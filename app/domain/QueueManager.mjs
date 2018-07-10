@@ -51,7 +51,7 @@ export default class QueueManager {
   _startConsensusConsumer(channel) {
     this._consume(channel, this._CONSENSUS_QUEUE, async (msg) => {
       const blockchain = JSON.parse(msg.content.toString())
-      await this._blockchain.consensusByNode(blockchain)
+      await this._blockchain.registerNodeAndRunConsensus(blockchain)
       channel.ack(msg)
     })    
   }

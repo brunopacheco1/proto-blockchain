@@ -33,3 +33,4 @@ I have a list of improvements to do:
 - Automate the deployment of all nodes;
 - Valid new transactions according to the sender's balance;
 - Create integration tests to evaluate the network behavior;
+- Introduce SONAR in the CI/CD;

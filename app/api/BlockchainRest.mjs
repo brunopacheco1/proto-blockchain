@@ -86,7 +86,7 @@ export default app => {
   })
 
   app.post(endpoints.POST_CONSENSUS, async (_, response) => {
-    await blockchain.consensus()
+    await blockchain.runConsensus()
     response.sendStatus(200)
   })
 

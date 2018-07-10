@@ -107,8 +107,12 @@ export default class Blochain {
     return gb.nonce == 100 && gb.previousBlockHash == "0" && gb.hash == "0" && gb.transactions.length == 0
   }
 
-  async consensus() {
+  async runConsensus() {
     const blockchains = await this._network.getChainsFromNodes()
+    this.consensus(blockchains)  
+  }
+
+  consensus(blockchains) {
     let longestBlockchain = null
     let longestLength = this._chain.length
     blockchains.forEach(blockchain => {
@@ -120,13 +124,10 @@ export default class Blochain {
     }
   }
 
-  async consensusByNode(blockchain) {
-    await this._network.registerNodes([blockchain._network._nodeUrl])
+  async registerNodeAndRunConsensus(blockchain) {
     if(blockchain._network._nodeUrl != this._network._nodeUrl) {
-      if(blockchain._chain.length > this._chain.length && this.isValidChain(blockchain._chain)) {
-        this._chain = blockchain._chain
-        this._pendingTransactions = blockchain._pendingTransactions
-      }
+      await this._network.registerNodes([blockchain._network._nodeUrl])
+      this.consensus([blockchain])
     }
   }
 

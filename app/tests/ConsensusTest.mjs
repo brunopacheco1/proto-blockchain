@@ -44,7 +44,7 @@ export default () => {
 
     const prevChainLength = blockchain.getChain().length
     const prevPendingTransactionsLength = blockchain.getPendingTransactions().length
-    await blockchain.consensus()
+    await blockchain.runConsensus()
     t.is(prevChainLength, blockchain.getChain().length)
     t.is(prevPendingTransactionsLength, blockchain.getPendingTransactions().length)
   })
@@ -105,7 +105,7 @@ export default () => {
 
     const prevChainLength = blockchain.getChain().length
     const prevPendingTransactionsLength = blockchain.getPendingTransactions().length
-    await blockchain.consensus()
+    await blockchain.runConsensus()
     t.not(prevChainLength, blockchain.getChain().length)
     t.not(prevPendingTransactionsLength, blockchain.getPendingTransactions().length)
   })
