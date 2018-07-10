@@ -1,9 +1,14 @@
 language: node_js
 node_js:
   - "10"
+addons:
+  sonarcloud:
+    organization: "brunopacheco1-github"
+    token:
+      secure: $SONAR_KEY
 script:
   - npm test
-  - sonar-scanner -Dsonar.projectKey=proto-blockchain -Dsonar.organization=brunopacheco1-github -Dsonar.sources=. -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_KEY
+  - sonar-scanner
 deploy:
   provider: heroku
   api_key: $HEROKU_API_KEY
