@@ -2,7 +2,6 @@ import express from "express"
 import bodyParser from "body-parser"
 import validator from "express-validator"
 import cors from "cors"
-import uuid from "uuid/v1"
 import blockchainRest from "./api/BlockchainRest"
 import swagger from "./api/swagger"
 
@@ -17,7 +16,6 @@ export default () => {
   app.profile = {}
   app.profile.name = ENV
   app.profile.port = NODE_PORT
-  app.profile.nodeId = uuid().split("-").join("")
   app.profile.nodeUrl = NODE_URL
   app.profile.rabbitmqServer = RABBITMQ
   app.use(bodyParser.urlencoded({extended: true}))

@@ -1,11 +1,10 @@
 import crypto from "crypto"
 import uuid from "uuid/v1"
-import QueueManager from "./QueueManager"
 
 export default class Blochain {
   
-  constructor(nodeId, network) {
-    this._nodeId=nodeId
+  constructor(network) {
+    this._nodeId=this._hash(network.getNodeUrl())
     this._chain=[]
     this._pendingTransactions=[]
     this._network=network

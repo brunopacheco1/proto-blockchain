@@ -72,4 +72,8 @@ export default class Network {
       throw new Error(e)
     }
   }
+
+  getNodeUrl(){
+    return this._nodeUrl
+  }
 }

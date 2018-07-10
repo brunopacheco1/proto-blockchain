@@ -2,7 +2,7 @@ import Blockchain from "../domain/Blockchain"
 import test from "ava"
 
 export default () => {
-  const blockchain = new Blockchain("DUMMIE_ID", {connectToNetwork:() => new Promise(done => done(true)), broadcastTransaction: () => {}, broadcastBlock: () => {}, getChainsFromNodes: () => []})
+  const blockchain = new Blockchain({getNodeUrl: () => "NODE_URL", connectToNetwork:() => new Promise(done => done(true)), broadcastTransaction: () => {}, broadcastBlock: () => {}, getChainsFromNodes: () => []})
 
   test("Creating a new block without transactions, expecting 2 blocks and the last has no transaction.", t => {
     blockchain.createBlock()

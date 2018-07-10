@@ -2,7 +2,7 @@ import Blockchain from "../domain/Blockchain"
 import test from "ava"
 
 export default () => {
-  const blockchain = new Blockchain("DUMMIE_ID", {})
+  const blockchain = new Blockchain({getNodeUrl: () => "NODE_URL"})
 
   test("Validating a chain, expecting not valid chain as previous hash is not the expected.", t => {
     const chain = [

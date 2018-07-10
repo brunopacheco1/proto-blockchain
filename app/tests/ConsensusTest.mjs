@@ -3,7 +3,7 @@ import test from "ava"
 
 export default () => {
   test("Running consensus, expecting no changes from a invalid chain.", async t => {
-    const blockchain = new Blockchain("DUMMIE_ID", {getChainsFromNodes:() => [{
+    const blockchain = new Blockchain({getNodeUrl: () => "NODE_URL", getChainsFromNodes:() => [{
       _pendingTransactions: [{
         index: 3,
         transactions: [{amount: 12.5, sender: "00",recipient: "9ab18a507f8311e8a22173c03004a307",transactionId: "63db0ce07f8811e8a22173c03004a307"}],
@@ -50,7 +50,7 @@ export default () => {
   })
 
   test("Running consensus, expecting changes from a valid chain.", async t => {
-    const blockchain = new Blockchain("DUMMIE_ID", {getChainsFromNodes:() => [{
+    const blockchain = new Blockchain({getNodeUrl: () => "NODE_URL", getChainsFromNodes:() => [{
       _pendingTransactions: [{
         index: 3,
         transactions: [{amount: 12.5, sender: "00",recipient: "9ab18a507f8311e8a22173c03004a307",transactionId: "63db0ce07f8811e8a22173c03004a307"}],
