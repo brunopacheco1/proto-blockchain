@@ -3,12 +3,7 @@ node_js:
   - "10"
 script:
   - npm test
-  - sonar-scanner \
-  -Dsonar.projectKey=proto-blockchain \
-  -Dsonar.organization=brunopacheco1-github \
-  -Dsonar.sources=. \
-  -Dsonar.host.url=https://sonarcloud.io \
-  -Dsonar.login=$SONAR_KEY
+  - sonar-scanner -Dsonar.projectKey=proto-blockchain -Dsonar.organization=brunopacheco1-github -Dsonar.sources=. -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_KEY
 deploy:
   provider: heroku
   api_key: $HEROKU_API_KEY
