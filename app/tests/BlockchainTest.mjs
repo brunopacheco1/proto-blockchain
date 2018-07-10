@@ -2,7 +2,7 @@ import Blockchain from "../domain/Blockchain"
 import test from "ava"
 
 export default () => {
-  const blockchain = new Blockchain({getNodeUrl: () => "NODE_URL", connectToNetwork:() => new Promise(done => done(true)), broadcastTransaction: () => {}, broadcastBlock: () => {}, getChainsFromNodes: () => []})
+  const blockchain = new Blockchain({getNodeId: () => "NODE_ID", getNodeUrl: () => "NODE_URL", connectToNetwork:() => new Promise(done => done(true)), broadcastTransaction: () => {}, broadcastBlock: () => {}, getChainsFromNodes: () => []})
 
   test("Creating a new block without transactions, expecting 2 blocks and the last has no transaction.", t => {
     blockchain.createBlock()
@@ -75,7 +75,7 @@ export default () => {
 
   test("Hashing block, expecting new hash starting with 0000.", t => {
     const block = {index: 0, timestamp: 0, transactions: [], previousBlockHash: "0INA90SDNF90N", nonce: 59443}
-    const hash = blockchain.hashBlock(block)
+    const hash = blockchain.hash(block)
     t.is(hash.substring(0,4), "0000")
   })
 
@@ -114,7 +114,7 @@ export default () => {
     const transactions = [{transactionId: "NEW_TRANSACTION", amount: 100, sender: "NEW_SENDER", recipient: "NEW_RECIPIENT"}]
     const block = {index: 6, timestamp: Date.now(), previousBlockHash: lastBlock.hash, transactions}
     block.nonce = blockchain.proofOfWork(block)
-    block.hash = blockchain.hashBlock(block)
+    block.hash = blockchain.hash(block)
     blockchain.receiveBlock(block)
     const chain = blockchain.getChain()
     t.is(chain.length, 6)

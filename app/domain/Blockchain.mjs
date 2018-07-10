@@ -1,10 +1,9 @@
-import crypto from "crypto"
 import uuid from "uuid/v1"
+import HashText from "../utils/HashText"
 
 export default class Blochain {
   
   constructor(network) {
-    this._nodeId=this._hash(network.getNodeUrl())
     this._chain=[]
     this._pendingTransactions=[]
     this._network=network
@@ -21,45 +20,44 @@ export default class Blochain {
 
   async mine() {
     const newBlock = await this.createAndBroadcastBlock()
-    await this.createAndBroadcastTransaction(12.5, "00", this._nodeId)
+    await this.createAndBroadcastTransaction(12.5, "00", this._network.getNodeId())
     return newBlock
   }
 
   async createAndBroadcastBlock() {
-    const newBlock = this.createBlock()
-    await this._network.broadcastBlock(newBlock)
-    return newBlock
+    const b = this.createBlock()
+    await this._network.broadcastBlock(b)
+    return b
   }
 
   createBlock() {
-    const newBlock = this._buildBlock()
-    newBlock.nonce = this.proofOfWork(newBlock)
-    newBlock.hash = this.hashBlock(newBlock)
-    this._pendingTransactions=[]
-    this._chain.push(newBlock)
-    return newBlock
+    const block = this.buildBlock()
+    block.nonce = this.proofOfWork(block)
+    block.hash = this.hash(block)
+    this.addIntoChain(block)
+    return block
   }
-
-  proofOfWork(block) {
-    block.nonce = 0
-    while(!this.hashBlock(block).startsWith("0000")) block.nonce++
-    return block.nonce
-  }
-
-  hashBlock(block) {
-    return this._hash(JSON.stringify(block))
-  }
-
-  _hash(message) {
-    const secret = "MY_SECRET"
-    return crypto.createHmac("sha256", secret).update(message).digest("hex")
-  }
-
-  _buildBlock() {
+  
+  buildBlock() {
     return {
       index: this._getCurrentIndex(), transactions: this._pendingTransactions,
       timestamp: Date.now(), previousBlockHash: this.getLastBlock().hash
     }
+  }
+
+  proofOfWork(block) {
+    block.nonce = 0
+    while(!this.hash(block).startsWith("0000")) block.nonce++
+    return block.nonce
+  }
+
+  hash(block) {
+    return HashText.hash(JSON.stringify(block))
+  }
+
+  addIntoChain(block) {
+    this._pendingTransactions=[]
+    this._chain.push(block)
   }
 
   async createAndBroadcastTransaction(amount, sender, recipient) {
@@ -68,9 +66,8 @@ export default class Blochain {
     return [blockIndex, newTransaction]
   }
 
-  createTransaction(amount, sender, recipient, transactionId) {
-    const newTransactionId = transactionId || uuid().split("-").join("")
-    const newTransaction = {amount, sender, recipient, transactionId: newTransactionId}
+  createTransaction(amount, sender, recipient, transactionId = uuid().split("-").join("")) {
+    const newTransaction = {amount, sender, recipient, transactionId}
     this._pendingTransactions.push(newTransaction)
     return [this._getCurrentIndex(), newTransaction]
   }
@@ -91,34 +88,21 @@ export default class Blochain {
     return this._chain.length + 1
   }
 
-  receiveBlock(newBlock) {
-    if(this._validateNewBlock(newBlock)){
-      this._chain.push(newBlock)
-      this._pendingTransactions=[]
-    } else {
-      throw new Error("Invalid block")
-    }
+  receiveBlock(block) {
+    if(this.isValidBlock(this.getLastBlock(), block)) this.addIntoChain(block);
+    else throw new Error("Invalid block")
   }
 
-  _validateNewBlock(block) {
-    const l = this.getLastBlock()
+  isValidBlock(previousBlock, block) {
     const oldHash = block.hash
     delete block.hash
-    block.hash = this.hashBlock(block)
+    block.hash = this.hash(block)
     if(block.hash.substring(0,4) != "0000" || oldHash != block.hash) return false
-    return l.hash == block.previousBlockHash && block.index == this._getCurrentIndex()
+    return previousBlock.hash == block.previousBlockHash && (previousBlock.index + 1) == block.index
   }
 
-  chainIsValid(chain) {
-    for(let i = 1; i < chain.length; i++) {
-      const curBlock = chain[i]
-      const prevBlock = chain[i-1]
-      const oldHash = curBlock.hash
-      delete curBlock.hash
-      curBlock.hash = this.hashBlock(curBlock)
-      if(curBlock.hash.substring(0,4) != "0000" || oldHash != curBlock.hash) return false
-      if(curBlock.previousBlockHash != prevBlock.hash) return false
-    }
+  isValidChain(chain) {
+    for(let i = 1; i < chain.length; i++) if(!this.isValidBlock(chain[i-1], chain[i])) return false
     const gb = chain[0] //genesis block
     return gb.nonce == 100 && gb.previousBlockHash == "0" && gb.hash == "0" && gb.transactions.length == 0
   }
@@ -130,7 +114,7 @@ export default class Blochain {
     blockchains.forEach(blockchain => {
       if(blockchain._chain.length > longestLength) longestBlockchain = blockchain
     })
-    if(longestBlockchain && this.chainIsValid(longestBlockchain._chain)) {
+    if(longestBlockchain && this.isValidChain(longestBlockchain._chain)) {
       this._chain = longestBlockchain._chain
       this._pendingTransactions = longestBlockchain._pendingTransactions
     }
@@ -139,7 +123,7 @@ export default class Blochain {
   async consensusByNode(blockchain) {
     await this._network.registerNodes([blockchain._network._nodeUrl])
     if(blockchain._network._nodeUrl != this._network._nodeUrl) {
-      if(blockchain._chain.length > this._chain.length && this.chainIsValid(blockchain._chain)) {
+      if(blockchain._chain.length > this._chain.length && this.isValidChain(blockchain._chain)) {
         this._chain = blockchain._chain
         this._pendingTransactions = blockchain._pendingTransactions
       }
@@ -175,5 +159,9 @@ export default class Blochain {
     })
     balance.total = balance.income - balance.outcome
     return balance.transactions.length == 0 ? null : balance
+  }
+
+  getNetwork() {
+    return this._network
   }
 }

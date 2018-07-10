@@ -4,9 +4,11 @@ export default class QueueManager {
 
   constructor(blockchain){
     this._blockchain = blockchain
+    this._NEW_NODE_QUEUE = "proto-blockchain.new-node"
+    this._CONSENSUS_QUEUE = "proto-blockchain.consensus"
   }
 
-  _initialize(rabbitmqServer) {
+  _createChannel(rabbitmqServer) {
     return new Promise(done => {
       amqp.connect(rabbitmqServer, (err, conn) => {
         conn.createChannel((err, ch) => {
@@ -28,27 +30,36 @@ export default class QueueManager {
     channel.publish(exchange, "", Buffer.from(JSON.stringify(message)))
   }
 
-  async initializeQueues(rabbitmqServer) {
+  async initialize(rabbitmqServer) {
     if(rabbitmqServer) {
-      const channel = await this._initialize(rabbitmqServer)
-
-      this._consume(channel, "proto-blockchain.new-node", async (msg) => {
-        const event = JSON.parse(msg.content.toString())
-        await this._blockchain._network.registerNodes(event.newNodes)
-        channel.ack(msg)
-        this._publish(channel, "proto-blockchain.consensus", this._blockchain)
-      })
-
-      this._consume(channel, "proto-blockchain.consensus", async (msg) => {
-        const blockchain = JSON.parse(msg.content.toString())
-        await this._blockchain.consensusByNode(blockchain)
-        channel.ack(msg)
-      })
-
-      setTimeout(() => {
-        const newNodes = {newNodes:[this._blockchain._network._nodeUrl]}
-        this._publish(channel, "proto-blockchain.new-node", newNodes)
-      }, 3000)
+      const channel = await this._createChannel(rabbitmqServer)
+      this._startNewNodeConsumer(channel)
+      this._startConsensusConsumer(channel)
+      this._publishCurrentNodeToTheNetwork(channel)
     }
+  }
+
+  _startNewNodeConsumer(channel) {
+    this._consume(channel, this._NEW_NODE_QUEUE, async (msg) => {
+      const event = JSON.parse(msg.content.toString())
+      await this._blockchain.getNetwork().registerNodes(event.newNodes)
+      channel.ack(msg)
+      this._publish(channel, this._CONSENSUS_QUEUE, this._blockchain)
+    })
+  }
+
+  _startConsensusConsumer(channel) {
+    this._consume(channel, this._CONSENSUS_QUEUE, async (msg) => {
+      const blockchain = JSON.parse(msg.content.toString())
+      await this._blockchain.consensusByNode(blockchain)
+      channel.ack(msg)
+    })    
+  }
+
+  _publishCurrentNodeToTheNetwork(channel) {
+    setTimeout(() => {
+      const newNodes = {newNodes:[this._blockchain.getNetwork().getNodeUrl()]}
+      this._publish(channel, this._NEW_NODE_QUEUE, newNodes)
+    }, 3000)
   }
 }

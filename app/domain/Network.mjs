@@ -1,9 +1,11 @@
 import endpoints from "../api/endpoints"
+import HashText from "../utils/HashText"
 
 export default class Network {
   
   constructor(nodeUrl, requestService) {
     this._nodeUrl=nodeUrl
+    this._nodeId=HashText.hash(nodeUrl)
     this._networkNodes=[]
     this._requestService=requestService
   }
@@ -75,5 +77,9 @@ export default class Network {
 
   getNodeUrl(){
     return this._nodeUrl
+  }
+
+  getNodeId() {
+    return this._nodeId
   }
 }

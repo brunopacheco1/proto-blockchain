@@ -13,7 +13,7 @@ export default app => {
   const network = new Network(app.profile.nodeUrl, request)
   const blockchain = new Blockchain(network)
   const queueManager = new QueueManager(blockchain)
-  queueManager.initializeQueues(app.profile.rabbitmqServer)
+  queueManager.initialize(app.profile.rabbitmqServer)
   
   app.get(endpoints.GET_INDEX, (_, response) => {
     response.sendStatus(200)

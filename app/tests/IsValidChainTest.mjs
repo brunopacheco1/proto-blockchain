@@ -48,7 +48,7 @@ export default () => {
       }
     ]
     
-    t.false(blockchain.chainIsValid(chain))
+    t.false(blockchain.isValidChain(chain))
   })
 
   test("Validating a chain, expecting not valid chain as hash is invalid.", t => {
@@ -95,7 +95,7 @@ export default () => {
       }
     ]
     
-    t.false(blockchain.chainIsValid(chain))
+    t.false(blockchain.isValidChain(chain))
   })
 
   test("Validating a chain, expecting not valid chain as genesis block is diferent.", t => {
@@ -142,7 +142,7 @@ export default () => {
       }
     ]
     
-    t.false(blockchain.chainIsValid(chain))
+    t.false(blockchain.isValidChain(chain))
   })
 
   test("Validating a chain, succeed expected.", t => {
@@ -189,6 +189,6 @@ export default () => {
       }
     ]
     
-    t.true(blockchain.chainIsValid(chain))
+    t.true(blockchain.isValidChain(chain))
   })
 }
