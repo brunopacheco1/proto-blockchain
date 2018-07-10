@@ -2,10 +2,9 @@ import endpoints from "../api/endpoints"
 
 export default class Network {
   
-  constructor(nodeUrl, nodeMaster, requestService) {
+  constructor(nodeUrl, requestService) {
     this._nodeUrl=nodeUrl
     this._networkNodes=[]
-    this._nodeMaster=nodeMaster
     this._requestService=requestService
   }
 
@@ -72,22 +71,5 @@ export default class Network {
     } catch(e) {
       throw new Error(e)
     }
-  }
-
-  async connectToNetwork() {
-    try {
-      if(this._nodeMaster) {
-        const opt = {method: "POST", body: {newNodes: [this._nodeUrl]}, json: true}
-        await this._requestService(`${this._nodeMaster}${endpoints.POST_NODES}`, opt)
-        return true
-      }
-    } catch(e) {
-      console.log(e)
-    }
-    return false
-  }
-
-  getNodeUrl() {
-    return this._nodeUrl
   }
 }

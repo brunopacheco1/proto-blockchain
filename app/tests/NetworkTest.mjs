@@ -2,7 +2,7 @@ import Network from "../domain/Network"
 import test from "ava"
 
 export default () => {
-  const network = new Network("NODE_URL", "NODE_MASTER", () => new Promise(done => done("OK")))
+  const network = new Network("NODE_URL", () => new Promise(done => done("OK")))
 
   test("Registering new node, expecting no changes.", async t => {
     await network.registerNodes(["NODE_URL"])

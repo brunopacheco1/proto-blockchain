@@ -10,7 +10,7 @@ import blockValidation from "../validation/block"
 import endpoints from "./endpoints"
 
 export default app => {
-  const network = new Network(app.profile.nodeUrl, app.profile.nodeMaster, request)
+  const network = new Network(app.profile.nodeUrl, request)
   const blockchain = new Blockchain(app.profile.nodeId, network)
   const queueManager = new QueueManager(blockchain)
   queueManager.initializeQueues(app.profile.rabbitmqServer)
