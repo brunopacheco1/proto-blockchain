@@ -2,11 +2,15 @@
 
 It's a learning case of the blockchain, built in JavaScript over Node.js. I'm using ES6 and 10.* versions respectively.
 
-It's possible to add and broadcast new transactions and to mine new blocks and broadcast them as well.
+It's possible to add and broadcast new transactions and to mine new blocks and broadcast them as well, calling some endpoints. It's possible to find more about the endpoints the Open API section.
 
 To add new nodes in the network previously I had to run endpoints manually to register the new node and to synchronize the blockchain. I'm using RabbitMQ to do it automatically. Any new node has to publish his own address in a topic and it'll receive back in another topic the blockchains from everyone else to run the consensus algorithm.
 
 Regarding the consensus algorithm, I'm currently using the longest chain, which means simply that the longest chain will be the last one if it's a valid chain.
+
+## Open API
+
+
 
 ## CI/CD
 
