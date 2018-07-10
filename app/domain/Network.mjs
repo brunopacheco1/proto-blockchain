@@ -71,8 +71,9 @@ export default class Network {
       const promises = this._networkNodes.map(node => this._requestService(`${node}${endpoints.GET_BLOCKCHAIN}`, {json: true}))
       return await Promise.all(promises)
     } catch(e) {
-      throw new Error(e)
+      console.log(e)
     }
+    return []
   }
 
   getNodeUrl(){
