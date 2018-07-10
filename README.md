@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/brunopacheco1/proto-blockchain.svg?branch=master)](https://travis-ci.org/brunopacheco1/proto-blockchain) [![Coverage Status](https://coveralls.io/repos/github/brunopacheco1/proto-blockchain/badge.svg?branch=master)](https://coveralls.io/github/brunopacheco1/proto-blockchain?branch=master)
+[![Build Status](https://travis-ci.org/brunopacheco1/proto-blockchain.svg?branch=master)](https://travis-ci.org/brunopacheco1/proto-blockchain) [![Coverage Status](https://coveralls.io/repos/github/brunopacheco1/proto-blockchain/badge.svg?branch=master)](https://coveralls.io/github/brunopacheco1/proto-blockchain?branch=master) [![Known Vulnerabilities](https://snyk.io/test/github/brunopacheco1/proto-blockchain/badge.svg?targetFile=package.json)](https://snyk.io/test/github/brunopacheco1/proto-blockchain?targetFile=package.json)
 
 # proto-blockchain
 
