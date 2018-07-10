@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/brunopacheco1/proto-blockchain.svg?branch=master)](https://travis-ci.org/brunopacheco1/proto-blockchain) [![Coverage Status](https://coveralls.io/repos/github/brunopacheco1/proto-blockchain/badge.svg?branch=master)](https://coveralls.io/github/brunopacheco1/proto-blockchain?branch=master)
+
 # proto-blockchain
 
 It's a learning case of the blockchain, built in JavaScript over Node.js. I'm using ES6 and 10.* versions respectively.
