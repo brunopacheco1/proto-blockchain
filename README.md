@@ -10,7 +10,9 @@ Regarding the consensus algorithm, I'm currently using the longest chain, which 
 
 ## Open API
 
+The API documentation can be found in the link below.
 
+https://proto-blockchain.herokuapp.com/api-docs
 
 ## CI/CD
 
