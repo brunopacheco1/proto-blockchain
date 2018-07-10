@@ -16,7 +16,7 @@ https://proto-blockchain.herokuapp.com/api-docs
 
 ## CI/CD
 
-I'm using Travis-CI and Heroku. Travis is running a simple script which executes the tests and deploys the app in Heroku Cloud. It's possible to find this config on .travis.yml file.
+I'm using Travis-CI, SonarCloud and Heroku. Travis is running a simple script which executes the tests, analyze the code with Sonar and deploys the app in Heroku Cloud. It's possible to find this config on .travis.yml file.
 
 ## Testing
 
@@ -33,4 +33,3 @@ I have a list of improvements to do:
 - Automate the deployment of all nodes;
 - Valid new transactions according to the sender's balance;
 - Create integration tests to evaluate the network behavior;
-- Introduce SONAR in the CI/CD;
