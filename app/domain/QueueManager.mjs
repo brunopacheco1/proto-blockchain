@@ -10,6 +10,7 @@ export default class QueueManager {
     return new Promise(done => {
       amqp.connect(rabbitmqServer, (err, conn) => {
         conn.createChannel((err, ch) => {
+          ch.basicQos(1)
           done(ch)
         })
       })
@@ -19,7 +20,7 @@ export default class QueueManager {
   _consume(channel, exchange, consumer) {
     channel.assertQueue("", {exclusive: true}, (err, q) => {
       channel.bindQueue(q.queue, exchange, "")
-      channel.consume(q.queue, consumer, {noAck: true})
+      channel.consume(q.queue, consumer, {noAck: false})
     })
   }
 
@@ -34,12 +35,14 @@ export default class QueueManager {
       this._consume(channel, "proto-blockchain.new-node", async (msg) => {
         const event = JSON.parse(msg.content.toString())
         await this._blockchain._network.registerNodes(event.newNodes)
+        channel.ack(msg)
         this._publish(channel, "proto-blockchain.consensus", this._blockchain)
       })
 
       this._consume(channel, "proto-blockchain.consensus", async (msg) => {
         const blockchain = JSON.parse(msg.content.toString())
         await this._blockchain.consensusByNode(blockchain)
+        channel.ack(msg)
       })
 
       setTimeout(() => {

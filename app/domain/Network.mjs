@@ -4,7 +4,7 @@ export default class Network {
   
   constructor(nodeUrl, nodeMaster, requestService) {
     this._nodeUrl=nodeUrl
-    this._networkNodes=[]
+    this._networkNodes=new Set()
     this._nodeMaster=nodeMaster
     this._requestService=requestService
   }
@@ -18,10 +18,10 @@ export default class Network {
   }
 
   async _checkIfUpAndAdd(newNode) {
-    if(this._nodeUrl != newNode && !this._networkNodes.includes(newNode)) {
+    if(this._nodeUrl != newNode && !this._networkNodes.has(newNode)) {
       try {
         await this._requestService(`${newNode}${endpoints.GET_INDEX}`)
-        this._networkNodes.push(newNode)
+        this._networkNodes.add(newNode)
       } catch(e) {
         console.log(`Node ${newNode} out of order.`)
         console.log(e)
