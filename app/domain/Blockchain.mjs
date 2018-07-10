@@ -1,7 +1,7 @@
 import uuid from "uuid/v1"
 import HashText from "../utils/HashText"
 
-export default class Blochain {
+export default class Blockchain {
   
   constructor(network) {
     this._chain=[]

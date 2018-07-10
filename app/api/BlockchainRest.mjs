@@ -33,7 +33,7 @@ export default app => {
     const sender = request.body.sender
     const recipient = request.body.recipient
     const transactionId = request.body.transactionId
-    const [blockIndex, _] = blockchain.createTransaction(amount, sender, recipient, transactionId)
+    const [blockIndex] = blockchain.createTransaction(amount, sender, recipient, transactionId)
     response.send({blockIndex})
   })
 
@@ -46,7 +46,7 @@ export default app => {
     const amount = request.body.amount
     const sender = request.body.sender
     const recipient = request.body.recipient
-    const [blockIndex, _] = await blockchain.createAndBroadcastTransaction(amount, sender, recipient)
+    const [blockIndex] = await blockchain.createAndBroadcastTransaction(amount, sender, recipient)
     response.send({blockIndex})
   })
 
