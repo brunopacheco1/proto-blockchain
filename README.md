@@ -18,20 +18,20 @@ https://proto-blockchain.herokuapp.com/api-docs
 
 ## CI/CD
 
-I'm using Travis-CI, SonarCloud and Heroku. Travis is running a simple script which executes the tests, analyze the code with Sonar and deploys the app in Heroku Cloud. It's possible to find this config on .travis.yml file.
+I'm using Travis-CI, Coveralls and Heroku. Travis is running a simple script which executes the tests, analyze the code with IstambulJS (nyc) and deploys the app in Heroku Cloud. It's possible to find this config on .travis.yml file.
 
 ## Testing
 
-I had to use AVA instead MOCHA to run the tests because there're some bugs in MOCHA to run ES6 code. It was quite easy writing test cases and also AVA already supports promises, besides providing good assert options.
+I started using AVA instead MOCHA because I faced some bugs in MOCHA to run ES6 code. After some googling, I found AVA and It was quite easy writing test cases, I didn't have bug with async/await and it provides good assert options.
 
-To run the test cases just execute npm test. I coded several unit tests and some integration tests. For integration tests, I'm using supertest library, but in the future, I might write more consistent ones as I'm not testing the network behavior when new nodes are added or when the transaction and block are broadcasted.
+To run the test cases just execute npm test. I coded several unit tests and some integration tests. For integration tests, I'm using supertest library, but in the future I might write more consistent ones, as I'm not testing the network behavior when new nodes are added or when the transaction and block are broadcasted.
 
-I split the test cases into many different files just to keep the semantic and reduce the files. They are not found automatically by AVA because I'm not following the known path standards. AVA was throwing some crazy not caught exception, so to the workaround I'm importing and declaring them manually in the file test.mjs.
+I split the test cases into many different files just to keep the semantic and reduce the files' size.
 
 ## Future work
 
-I have a list of improvements to do:
-- Persist somehow the blockchain somewhere, as Heroku has not persistent drivers as far as I know;
+TODO:
+- Persist somehow the blockchain, as Heroku has not persistent drivers as far as I know;
 - Automate the deployment of all nodes;
 - Valid new transactions according to the sender's balance;
 - Create integration tests to evaluate the network behavior;
