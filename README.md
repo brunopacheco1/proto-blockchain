@@ -4,11 +4,11 @@
 
 It's a learning case of the blockchain, built in JavaScript over Node.js. I'm using ES6 and 10.* versions respectively.
 
-It's possible to add and broadcast new transactions and to mine new blocks and broadcast them as well, calling some endpoints. It's possible to find more about the endpoints the Open API section.
+It's possible to add and broadcast new transactions and to mine new blocks calling some endpoints. Take a look the Open API section for more details.
 
-To add new nodes in the network previously I had to run endpoints manually to register the new node and to synchronize the blockchain. I'm using RabbitMQ to do it automatically. Any new node has to publish his own address in a topic and it'll receive back in another topic the blockchains from everyone else to run the consensus algorithm.
+I had to run endpoints manually to register new nodes and to synchronize them within the blockchain network, but now I'm using RabbitMQ. Any new node has to publish his own address in a topic and it'll receive back from another topic everyone else's blockchain to run the consensus algorithm.
 
-Regarding the consensus algorithm, I'm currently using the longest chain, which means simply that the longest chain will be the last one if it's a valid chain.
+I'm currently using the longest chain algorithm, which means simply that a chain will be kept by the network nodes if it's the longest valid chain.
 
 ## Open API
 
@@ -18,15 +18,15 @@ https://proto-blockchain.herokuapp.com/api-docs
 
 ## CI/CD
 
-I'm using Travis-CI, Coveralls and Heroku. Travis is running a simple script which executes the tests, analyze the code with IstambulJS (nyc) and deploys the app in Heroku Cloud. It's possible to find this config on .travis.yml file.
+I'm using Travis-CI, Coveralls and Heroku. Travis is running a simple script which executes the tests, analyzes the code with IstambulJS (nyc) and deploys the app in Heroku Cloud.
 
 ## Testing
 
-I started using AVA instead MOCHA because I faced some bugs in MOCHA to run ES6 code. After some googling, I found AVA and It was quite easy writing test cases, I didn't have bug with async/await and it provides good assert options.
+I'm using AvaJS and IstambulJS to run the test cases and to analyze the code. I'm not using Mocha instead because I faced some bugs on it while running ES6 code. After some googling, I found that it was quite easy writing test cases using AvaJS, I didn't have bug with async/await and it provides good assert options.
 
-To run the test cases just execute npm test. I coded several unit tests and some integration tests. For integration tests, I'm using supertest library, but in the future I might write more consistent ones, as I'm not testing the network behavior when new nodes are added or when the transaction and block are broadcasted.
+To run the test cases just execute npm test. I'm using supertest library for integration tests, but in the future I might write more consistent tests, as I'm not testing the network behavior when new nodes are added or when the transactions and blocks are broadcasted.
 
-I split the test cases into many different files just to keep the semantic and reduce the files' size.
+I splitted the test cases into many different files just to keep the semantic and reduce the files' size.
 
 ## Future work
 
