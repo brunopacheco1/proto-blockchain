@@ -10,7 +10,7 @@ export default class QueueManager {
     return new Promise(done => {
       amqp.connect(rabbitmqServer, (err, conn) => {
         conn.createChannel((err, ch) => {
-          ch.basicQos(1)
+          ch.prefetch(1)
           done(ch)
         })
       })
