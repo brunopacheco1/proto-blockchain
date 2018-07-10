@@ -1,5 +1,5 @@
 import test from "ava"
-import endpoints from "../api/endpoints"
+import endpoints from "../app/api/endpoints"
 
 export default (request) => {
 

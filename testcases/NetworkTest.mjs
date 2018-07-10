@@ -1,4 +1,4 @@
-import Network from "../domain/Network"
+import Network from "../app/domain/Network"
 import test from "ava"
 
 export default () => {

@@ -1,4 +1,4 @@
-import Blockchain from "../domain/Blockchain"
+import Blockchain from "../app/domain/Blockchain"
 import test from "ava"
 
 export default () => {

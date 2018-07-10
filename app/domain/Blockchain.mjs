@@ -15,7 +15,7 @@ export default class Blochain {
       index: this._getCurrentIndex(), transactions: [],
       timestamp: Date.now(), previousBlockHash: "0", hash: "0", nonce: 100
     }
-    this._chain.push(genesisBlock)
+    this.addIntoChain(genesisBlock)
   }
 
   async mine() {
