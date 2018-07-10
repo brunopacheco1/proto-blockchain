@@ -1,8 +1,7 @@
 import Blockchain from "../app/domain/Blockchain"
 import test from "ava"
 
-export default () => {
-  const blockchain = new Blockchain({getNodeId: () => "NODE_ID", getNodeUrl: () => "NODE_URL", connectToNetwork:() => new Promise(done => done(true)), broadcastTransaction: () => {}, broadcastBlock: () => {}, getChainsFromNodes: () => []})
+const blockchain = new Blockchain({getNodeId: () => "NODE_ID", getNodeUrl: () => "NODE_URL", connectToNetwork:() => new Promise(done => done(true)), broadcastTransaction: () => {}, broadcastBlock: () => {}, getChainsFromNodes: () => []})
 
   test("Creating a new block without transactions, expecting 2 blocks and the last has no transaction.", t => {
     blockchain.createBlock()
@@ -172,4 +171,3 @@ export default () => {
     const balance = blockchain.getBalanceByAddress("blablabla")
     t.is(balance, null)
   })
-}

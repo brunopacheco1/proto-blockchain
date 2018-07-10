@@ -1,8 +1,7 @@
 import Blockchain from "../app/domain/Blockchain"
 import test from "ava"
 
-export default () => {
-  const blockchain = new Blockchain({getNodeUrl: () => "NODE_URL"})
+const blockchain = new Blockchain({getNodeUrl: () => "NODE_URL"})
 
   test("Validating a chain, expecting not valid chain as previous hash is not the expected.", t => {
     const chain = [
@@ -191,4 +190,3 @@ export default () => {
     
     t.true(blockchain.isValidChain(chain))
   })
-}
