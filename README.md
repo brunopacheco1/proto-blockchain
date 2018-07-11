@@ -22,7 +22,7 @@ I'm using Travis-CI, Coveralls and Heroku. Travis is running a simple script whi
 
 ## Testing
 
-I'm using AvaJS and IstambulJS to run the test cases and to analyze the code. I'm not using Mocha because I faced some bugs on it while running ES6 code. After some googling, I found that it was quite easy writing test cases using AvaJS, I didn't have bug with async/await and it provides good assert options.
+I'm using AvaJS and IstambulJS to run the test cases and to analyze the code. I'm not using Mocha because I faced some bugs on it while running ES6 code. After some googling, I found that it was quite easy writing test cases using AvaJS with the new JavaScript version, I didn't have bug with async/await and it provides good assert options.
 
 To run the test cases just execute npm test. I'm using supertest library for integration tests, but in the future I might write more consistent tests, as I'm not testing the network behavior when new nodes are added or when the transactions and blocks are broadcasted.
 
