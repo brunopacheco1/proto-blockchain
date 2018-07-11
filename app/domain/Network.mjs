@@ -12,6 +12,7 @@ export default class Network {
 
   async registerNodes(newNodes) {
     await Promise.all(newNodes.map(newNode => this._checkIfUpAndAdd(newNode)))
+    this._networkNodes=Array.from(new Set(this._networkNodes));
   }
 
   getNetworkNodes() {
