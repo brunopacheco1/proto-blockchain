@@ -72,6 +72,11 @@ export default class Blockchain {
     return [this._getCurrentIndex(), newTransaction]
   }
 
+  hasBalance(sender, amount) {
+    const balance = this.getBalanceByAddress(sender)
+    if(!balance || balance.total < amount) throw new Error("No balance to complete the transaction")
+  }
+
   getPendingTransactions() {
     return this._pendingTransactions
   }

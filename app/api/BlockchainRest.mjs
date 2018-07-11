@@ -33,8 +33,12 @@ export default app => {
     const sender = request.body.sender
     const recipient = request.body.recipient
     const transactionId = request.body.transactionId
-    const [blockIndex] = blockchain.createTransaction(amount, sender, recipient, transactionId)
-    response.send({blockIndex})
+    try {
+      const [blockIndex] = blockchain.createTransaction(amount, sender, recipient, transactionId)
+      response.send({blockIndex})
+    } catch(e) {
+      response.status(409).send({errors :[e.message]})
+    }
   })
 
   app.post(endpoints.POST_TRANSACTION, checkSchema(transactionValidation), async (request, response) => {
@@ -46,8 +50,12 @@ export default app => {
     const amount = request.body.amount
     const sender = request.body.sender
     const recipient = request.body.recipient
-    const [blockIndex] = await blockchain.createAndBroadcastTransaction(amount, sender, recipient)
-    response.send({blockIndex})
+    try {
+      const [blockIndex] = await blockchain.createAndBroadcastTransaction(amount, sender, recipient)
+      response.send({blockIndex})
+    } catch(e) {
+      response.status(409).send({errors :[e.message]})
+    }
   })
 
   app.get(endpoints.GET_TRANSACTION, (request, response) => {

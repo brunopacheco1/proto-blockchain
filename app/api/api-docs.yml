@@ -58,6 +58,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SchemaErrors"
+        '409':
+          description:  No balance to complete the transaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConflictError"
     post:
       summary: Add a new transaction to network, broadcasting it for the other nodes
       operationId: postTransactionBroadcast
@@ -83,6 +89,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SchemaErrors"
+        '409':
+          description:  No balance to complete the transaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConflictError"
   /transaction/{transactionId}:
     get:
       summary: Info for a specific transaction
