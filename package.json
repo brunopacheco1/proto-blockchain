@@ -11,7 +11,9 @@
     "node_2": "cross-env PORT=3002 NODE_URL=http://localhost:3002 NODE_MASTER=http://localhost:3001 npm run dev",
     "node_3": "cross-env PORT=3003 NODE_URL=http://localhost:3003 NODE_MASTER=http://localhost:3001 npm run dev",
     "node_4": "cross-env PORT=3004 NODE_URL=http://localhost:3004 NODE_MASTER=http://localhost:3001 npm run dev",
-    "node_5": "cross-env PORT=3005 NODE_URL=http://localhost:3005 NODE_MASTER=http://localhost:3001 npm run dev"
+    "node_5": "cross-env PORT=3005 NODE_URL=http://localhost:3005 NODE_MASTER=http://localhost:3001 npm run dev",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -49,6 +51,8 @@
     "request-promise-native": "^1.0.5",
     "swagger-ui-express": "^3.0.10",
     "uuid": "^3.3.2",
-    "yamljs": "^0.3.0"
-  }
+    "yamljs": "^0.3.0",
+    "snyk": "^1.316.1"
+  },
+  "snyk": true
 }
